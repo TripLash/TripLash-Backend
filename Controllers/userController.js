@@ -1,14 +1,19 @@
 const User = require('../Models/userModel');
-const catchAsync = require('../util/catchAcync')
+const catchAsync = require('../util/catchAsync');
 
 
 exports.getUser = catchAsync(async(req , res , next) =>{
-    const user = await User.findById(req.param.id);
-
+    user = req.user
     res.status(200).json({
         status: 'success',
         data:{
-            user
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+            mobile: user.mobile,
+            user_type: user.user_type,
+            language: user.language,
+            currancy: user.currancy
         }
     })
 });

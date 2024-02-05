@@ -4,7 +4,7 @@ const morgan = require('morgan');
 const app = express();
 const {connect_db} = require('./util/db');
 const globalErrorHandler = require('./Controllers/errorController');
-
+const userRouter = require('./Routs/userRout');
 
 connect_db()
 app.use(morgan("dev"));
@@ -12,6 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 app.use(globalErrorHandler);
+app.use('/api/', userRouter);
 
 
 const port = 3000;

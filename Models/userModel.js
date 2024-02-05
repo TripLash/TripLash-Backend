@@ -3,13 +3,12 @@ const validator = require('validator');
 const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
-    fname:{
+    firstname:{
         type: String,
         required: [true , 'please enter your first name']
     },
-    lname:{
+    lastname:{
         type: String,
-        required: [true , 'please enter your last name']
     },
     email: {
         type: String,
@@ -20,7 +19,7 @@ const userSchema = new mongoose.Schema({
     },
     mobile:{
         type: Number,
-        validate: [validator.isMobilePhone , 'please enter valid mobile phone']
+        required: [true, 'please enter valid mobile phone']
     },
     password: {
         type: String,
@@ -40,23 +39,65 @@ const userSchema = new mongoose.Schema({
     birth_date:{
         type: Date
     },
-    user_type:{
-        type: String,
-        enum: ['user' , 'guide' , 'admin']
+    user_types:{
+        type: [
+            String
+        ],
+        enum: ['client' , 'guide' , 'admin'],
+        default: ['client']
     },
+    // profile language, 
     language:{
         type: String,
-        //isn't it in english only?
-        enum: ['Arabic' , 'English']
+        enum: ['A' , 'E']
     },
     currancy:{
         type: String,
     }
+}, {
+    timestamps: true
 })
 
-userSchema.method.correctPassword = function(candidatePassword , userPassword){
-    return bcrypt.compare(candidatePassword , userPassword);
-}
+userSchema.pre('save', async function (next) {
+    try {
+      // Check if the password is modified
+      if (!this.isModified('password')) {
+        return next();
+      }
+  
+      // Generate a salt
+      const salt = await bcrypt.genSalt(10);
+  
+      // Hash the password with the generated salt
+      const hashedPassword = await bcrypt.hash(this.password, salt);
+  
+      // Replace the plain text password with the hashed one
+      this.password = hashedPassword;
+      next();
+    } catch (error) {
+      return next(error);
+    }
+});
+
+// Add a method to add a new role to a user
+userSchema.methods.addRole = function (newRole) {
+    if (!this.user_types.includes(newRole)) {
+      this.user_types.push(newRole);
+    }
+};
+
+userSchema.methods.checkPassword = async function (providedPassword) {
+    try {
+      if (!providedPassword) {
+        throw new Error('Provided password is required');
+      }
+  
+      // Use bcrypt to compare the provided password with the hashed password
+      return await bcrypt.compare(providedPassword, this.password);
+    } catch (error) {
+      throw error;
+    }
+};
 
 const User = mongoose.model('User' , userSchema);
 
