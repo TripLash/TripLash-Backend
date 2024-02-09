@@ -2,17 +2,20 @@ const User = require('../Models/userModel');
 const catchAsync = require('../util/catchAsync');
 const AppError = require('../util/appError');
 const jwt = require('jsonwebtoken');
-const {ms_signup_invalid_password} = require('../util/error_messages');
+const { ms_signup_invalid_password, ms_reset_password_expire_date, ms_reset_password_invalid_code, ms_reset_password_changed } = require('../util/error_messages');
+const { sendVerificationCode, generateVerificationCode } = require('../util/generics');
 
-const generateAccessToken = id =>{
-    return jwt.sign({ id } , process.env.JWT_SECRET , {
+
+
+const generateAccessToken = id => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN
     });
 };
 
-const createSendToken = (user , statusCode , req , res) =>{
+const createSendToken = (user, statusCode, req, res) => {
     const token = generateAccessToken(user._id);
-    
+
     // not used in RestAPI
     // res.cookie('jwt' , token , {
     //     expires: new Date(
@@ -39,8 +42,8 @@ const createSendToken = (user , statusCode , req , res) =>{
     })
 };
 
-exports.signup = catchAsync(async(req , res , next) => {
-    const {name, mobile, email, password, language} = req.body;
+exports.signup = catchAsync(async (req, res, next) => {
+    const { name, mobile, email, password, language } = req.body;
     const nameArray = name.split(' ');
     const firstName = nameArray[0];
     const lastName = nameArray.slice(1).join(' ');
@@ -54,22 +57,114 @@ exports.signup = catchAsync(async(req , res , next) => {
         language
     })
 
-    createSendToken(newUser , 201 , req , res)
+    createSendToken(newUser, 201, req, res)
 });
 
-exports.login = catchAsync(async(req , res , next) =>{
-    
+exports.login = catchAsync(async (req, res, next) => {
+
     console.log(req.body);
     let user; // get user by email or mobile
-    if(req.body.email){
+    if (req.body.email) {
         user = await User.findOne({ email: req.body.email }).select('+password');
-    }else{
+    } else {
         user = await User.findOne({ mobile: req.body.mobile }).select('+password');
     }
-    
-    if(!user || !(await user.checkPassword(req.body.password , user.password))){
-        return next(new AppError(ms_signup_invalid_password[user.language] , 400));
+
+    if (!user || !(await user.checkPassword(req.body.password, user.password))) {
+        return next(new AppError(ms_signup_invalid_password[user.language], 400));
     }
 
-    createSendToken(user , 200 , req , res);
+    createSendToken(user, 200, req, res);
 });
+
+// check email 
+exports.checkEmail = catchAsync(async (req, res, next) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+        return res.status(400).json({
+            status: "failed"
+        })
+    }
+    return res.status(200).json({
+        status: "success"
+    })
+})
+
+// send verification code
+exports.sendVerificationCodeApi = catchAsync(async (req, res, next) => {
+    const { email } = req.body;
+    const generated_code = generateVerificationCode();
+    const user = await User.findOne({ email });
+    user.code = generated_code;
+    user.code_timestamps = Date.now()
+
+    await user.save()
+    await sendVerificationCode(email, generated_code);
+    return res.status(200).json({
+        status: "success"
+    })
+});
+
+
+function check_code(user, code, res) {
+    if (user && user.code === code) {
+        const currentTime = Date.now();
+        const timeDifference = currentTime - user.code_timestamps;
+        const expirationTime = 60 * 1000; // 1 minute in milliseconds
+
+        // Check if the code is still valid (within the expiration time)
+        if (timeDifference <= expirationTime) {
+            console.log('Verification successful');
+
+            // Clear the verification code and timestamp after successful verification
+            //   user.code = undefined;
+            //   await user.save();
+            return true;
+        } else {
+            console.log('Verification code has expired');
+            return res.status(400).json({
+                status: "failed",
+                message: ms_reset_password_expire_date[user.language]
+            })
+        }
+    } else {
+        console.log('Invalid verification code');
+        return res.status(400).json({
+            status: "failed",
+            message: ms_reset_password_invalid_code[user.language]
+        })
+    }
+}
+// verify code with email 
+exports.verifyEmail = catchAsync(async (req, res, next) => {
+    const { code, email } = req.body;
+    const user = await User.findOne({ email });
+    const validation_result = check_code(user, code, res);
+    if (validation_result !== true){
+        return validation_result;
+    }
+    return res.status(200).json({
+        status: "success",
+    });
+
+})
+// reset password 
+exports.resetPassword = catchAsync(async (req, res, next) => {
+    const { email, newPassword, code } = req.body;
+    const user = await User.findOne({ email });
+    const validation_result = check_code(user, code, res);
+    if (validation_result !== true) return validation_result;
+    
+    user.code = undefined;
+    // set new password and remove verification code and timestamp
+    user.password = newPassword;
+    await user.save();
+    const generated_token = generateAccessToken(user._id);
+    
+    return res.status(200).json({
+        status: "success",
+        token: generated_token,
+        message: ms_reset_password_changed[user.language]
+    });
+})

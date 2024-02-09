@@ -53,6 +53,12 @@ const userSchema = new mongoose.Schema({
     },
     currancy:{
         type: String,
+    },
+    code: {
+        type: String
+    },
+    code_timestamps: {
+        type: Date
     }
 }, {
     timestamps: true
