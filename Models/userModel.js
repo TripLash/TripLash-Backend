@@ -49,7 +49,8 @@ const userSchema = new mongoose.Schema({
     // profile language, 
     language:{
         type: String,
-        enum: ['A' , 'E']
+        enum: ['A' , 'E'],
+        default: 'E'
     },
     currancy:{
         type: String,

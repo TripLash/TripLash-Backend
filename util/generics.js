@@ -33,3 +33,10 @@ exports.sendVerificationCode = async (email, generated_code) => {
     throw error;
   }
 }
+
+
+exports.validateEmail = (email) => {
+  var regex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
+  return regex.test(email);
+}
+

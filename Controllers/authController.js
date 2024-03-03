@@ -2,8 +2,8 @@ const User = require('../Models/userModel');
 const catchAsync = require('../util/catchAsync');
 const AppError = require('../util/appError');
 const jwt = require('jsonwebtoken');
-const { ms_signup_invalid_password, ms_reset_password_expire_date, ms_reset_password_invalid_code, ms_reset_password_changed } = require('../util/error_messages');
-const { sendVerificationCode, generateVerificationCode } = require('../util/generics');
+const { ms_signup_invalid_password, ms_reset_password_expire_date, ms_reset_password_invalid_code, ms_reset_password_changed, ms_signup_email_exists, ms_signup_email_dont_exists } = require('../util/error_messages');
+const { sendVerificationCode, generateVerificationCode, validateEmail } = require('../util/generics');
 
 
 
@@ -48,6 +48,13 @@ exports.signup = catchAsync(async (req, res, next) => {
     const firstName = nameArray[0];
     const lastName = nameArray.slice(1).join(' ');
     // lastname = ;
+    const user = await User.findOne({email});
+    if (user){
+        return res.status(400).json({
+            status: "failed",
+            message: ms_signup_email_exists[user.language]
+        })
+    }
     const newUser = await User.create({
         firstname: firstName,
         lastname: lastName,
@@ -62,16 +69,26 @@ exports.signup = catchAsync(async (req, res, next) => {
 
 exports.login = catchAsync(async (req, res, next) => {
 
-    console.log(req.body);
+    const {username} = req.body;
     let user; // get user by email or mobile
-    if (req.body.email) {
-        user = await User.findOne({ email: req.body.email }).select('+password');
-    } else {
-        user = await User.findOne({ mobile: req.body.mobile }).select('+password');
+    // console.log(req.body);
+    if (validateEmail(username)) {
+        user = await User.findOne({ email: username }).select('+password');
+    }else{
+        user = await User.findOne({ mobile: username }).select('+password');
     }
-
+    if (!user) {
+        return res.status(400).json({
+            status: 'failed',
+            message: ms_signup_email_dont_exists['E']
+        });
+    }
     if (!user || !(await user.checkPassword(req.body.password, user.password))) {
-        return next(new AppError(ms_signup_invalid_password[user.language], 400));
+        // return next(new AppError(ms_signup_invalid_password[user.language], 400));
+        return res.status(400).json({
+            status: 'failed',
+            message: ms_signup_invalid_password[user.language]
+        });
     }
 
     createSendToken(user, 200, req, res);
@@ -96,6 +113,11 @@ exports.sendVerificationCodeApi = catchAsync(async (req, res, next) => {
     const { email } = req.body;
     const generated_code = generateVerificationCode();
     const user = await User.findOne({ email });
+    if (!user){
+        return res.status(400).json({
+            status: "failed"
+        })
+    }
     user.code = generated_code;
     user.code_timestamps = Date.now()
 
