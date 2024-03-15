@@ -10,7 +10,7 @@ exports.createGuide = catchAsync(async(req , res , next)=>{
     identity_check , show_tours , fav_activities
     } = req.body;
 
-    const user = await User.findOne(User.userId);
+    const user = req.user;
 
     console.log(user);
 

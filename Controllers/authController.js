@@ -74,9 +74,12 @@ exports.login = catchAsync(async (req, res, next) => {
     // console.log(req.body);
     if (validateEmail(username)) {
         user = await User.findOne({ email: username }).select('+password');
+        console.log(user , "email")
     }else{
         user = await User.findOne({ mobile: username }).select('+password');
+        console.log(user , "mobile")
     }
+    console.log(user)
     if (!user) {
         return res.status(400).json({
             status: 'failed',

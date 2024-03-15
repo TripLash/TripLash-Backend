@@ -5,6 +5,7 @@ const APIFeatures = require('../util/apiFeatures');
 const User = require('../Models/userModel');
 const Guide = require('../Models/guideModel');
 
+//TODO don't work
 exports.aliasTopTours = (req, res, next) => { // don't work why?????s
     req.query.limit = '5';
     req.query.sort = '-ratingsAverage,price';
@@ -45,6 +46,7 @@ exports.aliasTopTours = (req, res, next) => { // don't work why?????s
     });
   });
   
+  //TODO update this end point
   exports.CreateTour = catchAsync(async (req, res, next) => { // remaining("add tour to guide tours")s
 
     const tour = req.body;
@@ -57,7 +59,7 @@ exports.aliasTopTours = (req, res, next) => { // don't work why?????s
     const guide = await Guide.findOne({user : `${checkUser._id}`}); // don't work s
 
     if(!checkUser.user_types.includes('guide')){ 
-      newTour.owner = 'private_user';
+      newTour.tourType = 'private_user';
       newTour.save();
       // add tour to user tours
       checkUser.user_tours.push(newTour._id);

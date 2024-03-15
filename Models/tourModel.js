@@ -64,7 +64,7 @@ const tourSchema = new mongoose.Schema({
         type: Number,
         required: [true , "tour must have price!"]
     },
-    owner:{
+    tourType:{
         type: String,
         enum: ['private_user' , 'private_guide' , 'puplic_guide'],
         default:"private_user"
