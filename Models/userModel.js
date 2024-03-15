@@ -60,7 +60,11 @@ const userSchema = new mongoose.Schema({
     },
     code_timestamps: {
         type: Date
-    }
+    },
+    user_tours:[{
+        type: mongoose.Schema.ObjectId,
+        ref: 'Tour'
+    }]
 }, {
     timestamps: true
 })
@@ -102,7 +106,7 @@ userSchema.methods.checkPassword = async function (providedPassword) {
       // Use bcrypt to compare the provided password with the hashed password
       return await bcrypt.compare(providedPassword, this.password);
     } catch (error) {
-      throw error;
+      throw error;0
     }
 };
 

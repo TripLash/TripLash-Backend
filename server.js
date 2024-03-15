@@ -6,6 +6,9 @@ const cors = require('cors');
 const {connect_db} = require('./util/db');
 const globalErrorHandler = require('./Controllers/errorController');
 const userRouter = require('./Routs/userRout');
+const tourRouter = require('./Routs/tourRout');
+const guideRouter = require('./Routs/guideRouts');
+
 
 app.use(cors())
 connect_db()
@@ -15,6 +18,8 @@ app.use(express.urlencoded({extended: true}));
 
 app.use(globalErrorHandler);
 app.use('/api/', userRouter);
+app.use('/api/', tourRouter);
+app.use('/api/', guideRouter);
 
 
 const port = process.env.PORT || 3000;
