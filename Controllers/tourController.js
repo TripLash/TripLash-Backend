@@ -12,66 +12,82 @@ exports.aliasTopTours = (req, res, next) => { // don't work why?????s
     next();
   };
   
-  exports.GetAllTours = catchAsync(async (req, res, next) => {
-    //Executing Query
-    const Features = new APIFeatures(Tour.find(), req.query)
-      .Filter()
-      .Sorting()
-      .LimitFields()
-      .Pagination();
-    const tours = await Features.query;
-  
-    //Send Response
-    res.status(200).json({
+exports.getTours = catchAsync(async (req, res, next) => {
+  // Pagination options
+  const page = parseInt(req.query.page) || 1; // Default page number is 1
+  const limit = parseInt(req.query.limit) || 10; // Default limit is 10 tours per page
+  const skip = (page - 1) * limit; // Calculate skip value
+
+  // Sorting options
+  const sortField = req.query.sortBy || 'createdAt'; // Default sort field is 'createdAt'
+  const sortOrder = req.query.sortOrder || 'desc'; // Default sort order is descending
+
+  // Query options
+  const query = Tour.find().populate('itinerary').populate('meetingPoint');
+  query.sort({ [sortField]: sortOrder }); // Apply sorting
+  query.skip(skip).limit(limit); // Apply pagination
+
+  // Execute the query to fetch tours and count total number of tours
+  const [tours, totalToursCount] = await Promise.all([
+      query.exec(),
+      Tour.countDocuments()
+  ]);
+
+  // Calculate total number of pages
+  const totalPages = Math.ceil(totalToursCount / limit);
+
+  // Return a response with the fetched tours and pagination metadata
+  res.status(200).json({
       status: 'success',
-      results: tours.length,
-      data: {
-        tours,
+      pagination: {
+          totalItems: totalToursCount,
+          totalPages,
+          currentPage: page,
+          limit
       },
-    });
+      data: tours
   });
+});
   
-  exports.GetTour = catchAsync(async (req, res, next) => {
-    const tour = await Tour.findById(req.params.id);
-  
-    if (!tour) {
-      return next(new AppError('Tour Is Not Found!', 404));
-    }
-  
-    res.status(200).json({
+exports.getTour = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+
+  // Query the database to retrieve the tour with the specified ID
+  const tour = await Tour.findById(id);
+
+  // Check if the tour exists
+  if (!tour) {
+      return res.status(404).json({ status: 'error', message: 'Tour not found' });
+  }
+
+  // Return a response with the fetched tour
+  res.status(200).json({
       status: 'success',
-      data: {
-        tour,
-      },
-    });
+      data: tour
   });
-  
-  //TODO update this end point
-  exports.CreateTour = catchAsync(async (req, res, next) => { // remaining("add tour to guide tours")s
+});
 
-    const tour = req.body;
-    const user = tour.user;
+exports.createTour = catchAsync(async (req, res, next) => {
+  // Extract the user from req.user
+  const user = req.user;
 
-    const newTour = await Tour.create(req.body);
-    const checkUser = await User.findById(user);
+  // Ensure user exists
+  if (!user) {
+      return res.status(400).json({ status: 'error', message: 'User not found' });
+  }
 
-    // const query = {user : `${checkUser._id}`}
-    const guide = await Guide.findOne({user : `${checkUser._id}`}); // don't work s
+  // Create a new tour instance using the request body
+  const newTourData = req.body;
+  newTourData.user = user._id; // Associate the user with the tour
+  const newTour = new Tour(newTourData);
 
-    if(!checkUser.user_types.includes('guide')){ 
-      newTour.tourType = 'private_user';
-      newTour.save();
-      // add tour to user tours
-      checkUser.user_tours.push(newTour._id);
-      checkUser.save();
-    }// else add tour to guide tours s
-      res.status(201).json({
-        status: 'success',
-        data: {
-          tour: newTour,
-        },
-      });
+  // Save the new tour to the database
+  const createdTour = await newTour.save();
+
+  // Return a response with the created tour data
+  res.status(201).json({
+    status: 'success',
+    data: createdTour
   });
-
-
-  //ratingsAverage and ratingsQuantity need to be updated each time a review is added s
+})
+//ratingsAverage and ratingsQuantity need to be updated each time a review is added s

@@ -1,5 +1,27 @@
 const mongoose = require('mongoose');
 
+const itinerarySchema = new mongoose.Schema({
+    title: String,
+    objects: [{
+        description: String,
+        location: {
+            name: String,
+            lat: Number,
+            long: Number
+        }
+    }]
+});
+
+const meetingPointSchema = new mongoose.Schema({
+    description: String,
+    location: {
+        name: String,
+        lat: Number,
+        long: Number
+    }
+});
+
+
 const tourSchema = new mongoose.Schema({
     name:{
         type: String,
@@ -23,6 +45,7 @@ const tourSchema = new mongoose.Schema({
     },
     ratingsAverage:{
         type: Number,
+        default: 0, // Added default value
         min: [1 , 'rating must be above 1.0'],
         max: [5 , 'rating must be under 5.0']
     },
@@ -32,22 +55,10 @@ const tourSchema = new mongoose.Schema({
       },
     itinerary:[{
         title: String,
-        objects: [{
-            description: String,
-            location: {
-                name: String,
-                lat: Number,
-                long: Number
-            }
-        }]
+        objects: [itinerarySchema]
     }],
     meetingPoint:{
-        description: String,
-        location: {
-            name: String,
-            lat: Number,
-            long: Number
-        }
+        type: meetingPointSchema
     },
     transportation:{
         type: String,
@@ -56,18 +67,18 @@ const tourSchema = new mongoose.Schema({
     included:[String],
     excluded:[String],
     cash:[String],
-    reviews:[{
-        type: mongoose.Schema.ObjectId,
-        ref: 'Review'
-    }],
+    // reviews:[{
+    //     type: mongoose.Schema.ObjectId,
+    //     ref: 'Review'
+    // }],
     price:{
         type: Number,
         required: [true , "tour must have price!"]
     },
     tourType:{
         type: String,
-        enum: ['private_user' , 'private_guide' , 'puplic_guide'],
-        default:"private_user"
+        enum: ['private', 'public'],
+        default:"public"
     }
 });
 
