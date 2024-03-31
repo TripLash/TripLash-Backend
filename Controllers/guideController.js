@@ -2,6 +2,8 @@ const Guide = require('../Models/guideModel');
 const User = require('../Models/userModel')
 const Tour = require('../Models/tourModel')
 const catchAsync = require('../util/catchAsync');
+const Review = require('../Models/reviewModel');
+
 
 exports.createGuide = catchAsync(async (req, res, next) => {
     const {
@@ -71,4 +73,27 @@ exports.getTourGuides = catchAsync(async (req ,res ,next) => {
         });
 
     res.json(guides);
+})
+
+exports.getGuideById = catchAsync(async (req, res, next) => {
+    const guideId = req.params.id;
+
+    try {
+        const guide = await Guide.findById(guideId)
+            .populate('user', 'firstname lastname country city birth_date')
+            .populate({
+                path: 'languages',
+                select: 'name experience'
+            })
+            .select('-__v'); // Exclude the '__v' field from the response
+
+        if (!guide) {
+            return res.status(404).json({ status: 'fail', message: 'Guide not found' });
+        }
+
+        res.json({ status: 'success', data: guide });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: 'error', message: 'Server Error' });
+    }
 })

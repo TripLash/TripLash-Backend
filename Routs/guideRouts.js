@@ -5,4 +5,5 @@ const protect = require('../util/middlewares');
 
 router.post('/createGuide/',  protect(['client']) , guideController.createGuide);
 router.get('/get-guides/', guideController.getTourGuides);
+router.get('/guide/:id',guideController.getGuideById);
 module.exports = router;
