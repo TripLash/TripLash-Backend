@@ -24,7 +24,7 @@ const reviewSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    photos: [String]
+    // photos: [String]
 },
 {
   toJSON: { virtuals: true },

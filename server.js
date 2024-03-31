@@ -8,7 +8,7 @@ const globalErrorHandler = require('./Controllers/errorController');
 const userRouter = require('./Routs/userRout');
 const tourRouter = require('./Routs/tourRout');
 const guideRouter = require('./Routs/guideRouts');
-
+const reviewRouter = require('./Routs/review');
 
 app.use(cors())
 connect_db()
@@ -20,7 +20,7 @@ app.use(globalErrorHandler);
 app.use('/api/', userRouter);
 app.use('/api/', tourRouter);
 app.use('/api/', guideRouter);
-
+app.use('/api/', reviewRouter);
 
 const port = process.env.PORT || 3000;
 app.listen(port, ()=> {
