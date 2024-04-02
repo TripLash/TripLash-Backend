@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Review = require('./reviewModel');
+
 
 const itinerarySchema = new mongoose.Schema({
     title: String,
@@ -47,7 +49,8 @@ const tourSchema = new mongoose.Schema({
         type: Number,
         default: 0, // Added default value
         min: [1 , 'rating must be above 1.0'],
-        max: [5 , 'rating must be under 5.0']
+        max: [5 , 'rating must be under 5.0'],
+        set: val => Math.round(val * 10) / 10
     },
     ratingsQuantity: {
         type: Number,
@@ -81,6 +84,36 @@ const tourSchema = new mongoose.Schema({
         default:"public"
     }
 });
+
+
+
+// Middleware to calculate ratingsAverage
+tourSchema.statics.calcAverageRatings = async function(tourId) {
+    const stats = await Review.aggregate([
+        {
+            $match: { tour: tourId }
+        },
+        {
+            $group: {
+                _id: '$tour',
+                nRating: { $sum: 1 },
+                avgRating: { $avg: '$rating' }
+            }
+        }
+    ]);
+
+    if (stats.length > 0) {
+        await this.findByIdAndUpdate(tourId, {
+            ratingsQuantity: stats[0].nRating,
+            ratingsAverage: stats[0].avgRating
+        });
+    } else {
+        await this.findByIdAndUpdate(tourId, {
+            ratingsQuantity: 0,
+            ratingsAverage: 0
+        });
+    }
+};
 
 const Tour = mongoose.model('Tour' , tourSchema);
 

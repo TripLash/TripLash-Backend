@@ -8,6 +8,6 @@ router.get('/get-tours/' , tourController.getTours);
 router.get('/get-tour/:id' , tourController.getTour);
 router.post('/create-tour/' , protect(['guide']), tourController.createTour);
 router.get('/topTours/' , tourController.aliasTopTours); // don't work why???s
-
+router.post('/create-application/', tourController.createAppliaction);
 
 module.exports = router;

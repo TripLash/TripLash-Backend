@@ -4,6 +4,9 @@ const AppError = require('../util/appError');
 const APIFeatures = require('../util/apiFeatures');
 const User = require('../Models/userModel');
 const Guide = require('../Models/guideModel');
+const Application = require('../Models/applicationModel');
+
+
 
 //TODO don't work
 exports.aliasTopTours = (req, res, next) => { // don't work why?????s
@@ -91,3 +94,15 @@ exports.createTour = catchAsync(async (req, res, next) => {
   });
 })
 //ratingsAverage and ratingsQuantity need to be updated each time a review is added s
+
+// create application for public tour 
+exports.createAppliaction = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  const data = req.body;
+  data.user = user;
+  console.log(data);
+  await Application.create(user);
+  res.status(201).json({
+    status: "success"
+  });
+})
