@@ -1,4 +1,8 @@
 const nodemailer = require('nodemailer');
+const admin = require('../firebase-admin');
+const Notification = require('../Models/notificationModels');
+const {NOTIFICATION_TYPES } = require('../constants/notification-types');
+const User = require('../Models/userModel');
 
 
 exports.generateVerificationCode = () => {
@@ -43,3 +47,26 @@ exports.validateEmail = (email) => {
     );
 };
 
+
+
+exports.sendFCMNotification = async (user, title, body, notification_type) => {
+  try {
+    const userObj = await User.findById(user);
+
+    const message = {
+      notification: {
+        title: title,
+        body: body,
+      },
+      token: userObj.fcmToken,
+    };
+    if (notification_type == NOTIFICATION_TYPES.MENU) {
+      await Notification.create({ title: title, body: body, user: user._id });
+    }
+    // Send the message using Firebase Admin SDK
+    console.log(userObj.fcmToken)
+    await admin.messaging().send(message);
+  } catch (error) {
+    console.error(`Error sending FCM notification: ${error.message}`);
+  }
+}

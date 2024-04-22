@@ -1,6 +1,8 @@
 const Review = require('../Models/reviewModel');
 const catchAsync = require('../util/catchAsync');
-
+const {sendFCMNotification} = require('../util/generics');
+const Tour = require('../Models/tourModel');
+const {NOTIFICATION_TYPES} = require('../constants/notification-types');
 
 exports.createReview = catchAsync(async (req, res, next) => {
     const {tour, review,  rating} = req.body;
@@ -11,10 +13,12 @@ exports.createReview = catchAsync(async (req, res, next) => {
         review,
         rating
     })
-   res.status(201).json({
-    status: "success",
-    message: 'created'
-   })
+    const tourObj = await Tour.findById(tour);
+    await sendFCMNotification(tourObj.user, 'New Review', `New review from ${user.firstname} ${user.lastname}`, NOTIFICATION_TYPES.MENU);
+    res.status(201).json({
+        status: "success",
+        message: 'created'
+    })
 });
 
 exports.getAllReviews = catchAsync(async (req, res, next)=> {

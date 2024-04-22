@@ -64,7 +64,8 @@ const userSchema = new mongoose.Schema({
     user_tours:[{
         type: mongoose.Schema.ObjectId,
         ref: 'Tour'
-    }]
+    }],
+    fcmToken: String
 }, {
     timestamps: true
 })

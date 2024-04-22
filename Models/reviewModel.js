@@ -34,9 +34,9 @@ const reviewSchema = new mongoose.Schema({
 
 
 // Middleware to call calcAverageRatings after saving a review
-reviewSchema.post('save', function() {
-    this.constructor.calcAverageRatings(this.tour);
-});
+// reviewSchema.post('save', function() {
+//     this.constructor.calcAverageRatings(this.tour);
+// });
 
 // Middleware to call calcAverageRatings before removing a review
 reviewSchema.pre(/^findOneAnd/, async function(next) {
