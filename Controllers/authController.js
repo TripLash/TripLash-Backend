@@ -1,4 +1,5 @@
 const User = require('../Models/userModel');
+const Faviorate = require('../Models/faviorateModel');
 const catchAsync = require('../util/catchAsync');
 const AppError = require('../util/appError');
 const jwt = require('jsonwebtoken');
@@ -47,7 +48,6 @@ exports.signup = catchAsync(async (req, res, next) => {
     const nameArray = name.split(' ');
     const firstName = nameArray[0];
     const lastName = nameArray.slice(1).join(' ');
-    // lastname = ;
     const user = await User.findOne({email});
     if (user){
         return res.status(400).json({
@@ -62,6 +62,11 @@ exports.signup = catchAsync(async (req, res, next) => {
         mobile,
         password,
         language
+    })
+
+    await Faviorate.create({
+        name: 'Requested Tours',
+        user: newUser._id,
     })
 
     createSendToken(newUser, 201, req, res)
@@ -96,6 +101,11 @@ exports.login = catchAsync(async (req, res, next) => {
 
     createSendToken(user, 200, req, res);
 });
+
+//TODO
+exports.logout = catchAsync(async(req , res , next) =>{
+    
+})
 
 // check email 
 exports.checkEmail = catchAsync(async (req, res, next) => {

@@ -28,3 +28,13 @@ exports.getAllUsers = catchAsync(async(req , res , next) =>{
         }
     })
 });
+
+//TODO
+exports.UpdateUser = catchAsync(async(req , res , next) =>{
+
+});
+
+//TODO
+exports.deleteUser = catchAsync(async(req , res , next) =>{
+
+})

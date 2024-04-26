@@ -2,6 +2,14 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 
+// const favListSchema = new mongoose.Schema({
+//     name: String, 
+//     tours:[{
+//         type: mongoose.Types.ObjectId,
+//         ref: 'Tour'
+//     }]
+// })
+
 const userSchema = new mongoose.Schema({
     firstname:{
         type: String,
@@ -60,12 +68,14 @@ const userSchema = new mongoose.Schema({
     },
     code_timestamps: {
         type: Date
-    },
-    user_tours:[{
-        type: mongoose.Schema.ObjectId,
-        ref: 'Tour'
-    }],
-    fcmToken: String
+     },
+    // user_tours:[{
+    //     type: mongoose.Schema.ObjectId,
+    //     ref: 'Tour'
+    // }],
+    fcmToken: String,
+    photo: String,
+    // favList: [favListSchema]
 }, {
     timestamps: true
 })

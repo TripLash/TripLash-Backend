@@ -7,7 +7,6 @@ const itinerarySchema = new mongoose.Schema({
     objects: [{
         description: String,
         location: {
-            name: String,
             lat: Number,
             long: Number
         }
@@ -17,7 +16,6 @@ const itinerarySchema = new mongoose.Schema({
 const meetingPointSchema = new mongoose.Schema({
     description: String,
     location: {
-        name: String,
         lat: Number,
         long: Number
     }
@@ -25,7 +23,7 @@ const meetingPointSchema = new mongoose.Schema({
 
 
 const tourSchema = new mongoose.Schema({
-    name:{
+    title:{
         type: String,
         required: [true , 'tour must contain name']
     },
@@ -33,18 +31,18 @@ const tourSchema = new mongoose.Schema({
     user:{
         type: mongoose.Schema.ObjectId,
         ref: 'User',
-         required: [true , 'tour must have tour guide']
+        required: [true , 'tour must have tour guide']
     },
     description:{
         type: String,
         required: [true , 'tour must have description']
     },
     duration: Number,
-    tourCategory: {
+    tourType: [{
         type: String,
         enum: ['Bus Tour' , "Day Trip" , 'Walking Tour' , 'Food & Drink' , 'Bike Tour' , 'cruises'],
         required: [true , 'specify tour type please!']
-    },
+    }],
     ratingsAverage:{
         type: Number,
         default: 0, // Added default value
@@ -70,18 +68,24 @@ const tourSchema = new mongoose.Schema({
     included:[String],
     excluded:[String],
     cash:[String],
-    // reviews:[{
-    //     type: mongoose.Schema.ObjectId,
-    //     ref: 'Review'
-    // }],
     price:{
         type: Number,
         required: [true , "tour must have price!"]
     },
-    tourType:{
+    tourCategory:{
         type: String,
-        enum: ['private', 'public'],
+        enum: ['private', 'public' , 'user'],
         default:"public"
+    },
+    creation_date: Date,
+    faviorate: {
+        type: Boolean,
+        default: false
+    },
+    participants: Number,
+    members:{
+        type: Number,
+        default: 0
     }
 });
 

@@ -96,4 +96,14 @@ exports.getGuideById = catchAsync(async (req, res, next) => {
         console.error(error);
         res.status(500).json({ status: 'error', message: 'Server Error' });
     }
+});
+
+//TODO
+exports.guideTours = catchAsync(async (req , res , next) =>{
+
+});
+
+//TODO
+exports.acceptApplication = catchAsync(async (req , res ,next) =>{
+    //if tour.tourCategory == 'user'
 })

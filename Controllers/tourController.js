@@ -4,7 +4,7 @@ const AppError = require('../util/appError');
 const APIFeatures = require('../util/apiFeatures');
 const User = require('../Models/userModel');
 const Guide = require('../Models/guideModel');
-const Application = require('../Models/applicationModel');
+
 
 
 
@@ -82,6 +82,10 @@ exports.createTour = catchAsync(async (req, res, next) => {
   // Create a new tour instance using the request body
   const newTourData = req.body;
   newTourData.user = user._id; // Associate the user with the tour
+  if(newTourData.tourType === 'user') {
+    newTourData.faviorate = true;
+  };
+  //TODO is it legal to equal two lists??
   const newTour = new Tour(newTourData);
 
   // Save the new tour to the database
@@ -95,14 +99,12 @@ exports.createTour = catchAsync(async (req, res, next) => {
 })
 //ratingsAverage and ratingsQuantity need to be updated each time a review is added s
 
-// create application for public tour 
-exports.createAppliaction = catchAsync(async (req, res, next) => {
-  const user = req.user;
-  const data = req.body;
-  data.user = user;
-  console.log(data);
-  await Application.create(user);
-  res.status(201).json({
-    status: "success"
-  });
+//TODO
+exports.deleteTour = catchAsync(async (req , res , next) =>{
+
+})
+
+//TODO
+exports.updateTour = catchAsync(async (req , res , next) =>{
+
 })

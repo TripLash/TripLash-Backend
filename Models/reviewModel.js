@@ -20,7 +20,7 @@ const reviewSchema = new mongoose.Schema({
         type: String,
         required: [true , 'Review can not be empty']
     },
-    createAt: {
+    created_at: {
         type: Date,
         default: Date.now
     },

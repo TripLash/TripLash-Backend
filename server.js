@@ -9,6 +9,7 @@ const userRouter = require('./Routs/userRout');
 const tourRouter = require('./Routs/tourRout');
 const guideRouter = require('./Routs/guideRouts');
 const reviewRouter = require('./Routs/review');
+const faviorateRouter = require('./Routs/faviorateRouts');
 const notificationRouter = require('./Routs/notification');
 
 
@@ -23,6 +24,7 @@ app.use('/api/', userRouter);
 app.use('/api/', tourRouter);
 app.use('/api/', guideRouter);
 app.use('/api/', reviewRouter);
+app.use('/api/' , faviorateRouter)
 app.use('/api/', notificationRouter);
 
 const port = process.env.PORT || 3000;

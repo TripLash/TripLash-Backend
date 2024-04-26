@@ -22,8 +22,11 @@ const protect = (requiredRoles = []) => {
             }
             // Check if the decoded user has the required roles
             const userRoles = user.user_types || [];
-            const hasRequiredRoles = requiredRoles.every(role => userRoles.includes(role));
-
+            const hasRequiredRoles = requiredRoles.every(role =>{
+                console.log(role);
+                 userRoles.includes(role)
+                });
+            console.log(hasRequiredRoles);
             if (!hasRequiredRoles) {
                 return res.status(403).json({ message: 'Forbidden - Insufficient permissions' });
             }
