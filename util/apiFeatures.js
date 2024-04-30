@@ -19,11 +19,15 @@ class APIFeatures {
   
     Sorting() {
       if (this.queryString.sort) {
-        const sortBy = this.queryString.sort.split(',').join(' ');
-        this.query = this.query.sort(sortBy);
-      } else {
-        this.query = this.query.sort('-createdAt');
-      }
+        const sortField = this.queryString.sort.split(',').join(' ') || 'createdAt';
+        // this.query = this.query.sort(sortBy);
+        const sortOrder = this.queryString.sort.sortOrder || 'desc';
+        this.query = this.query.sort({ [sortField]: sortOrder });
+      } 
+      // else {
+      //   this.query = this.query.sort('-createdAt');
+      // }
+      
   
       return this;
     }
@@ -39,7 +43,7 @@ class APIFeatures {
     }
   
     Pagination() {
-      const limit = this.queryString.limit * 1 || 100;
+      const limit = this.queryString.limit * 1 || 10;
       const page = this.queryString.page * 1 || 1;
       const skip = (page - 1) * limit;
   

@@ -2,13 +2,6 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 
-// const favListSchema = new mongoose.Schema({
-//     name: String, 
-//     tours:[{
-//         type: mongoose.Types.ObjectId,
-//         ref: 'Tour'
-//     }]
-// })
 
 const userSchema = new mongoose.Schema({
     firstname:{
@@ -27,6 +20,7 @@ const userSchema = new mongoose.Schema({
     },
     mobile:{
         type: Number,
+        unique: true,
         required: [true, 'please enter valid mobile phone']
     },
     password: {

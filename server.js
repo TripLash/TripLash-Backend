@@ -8,9 +8,9 @@ const globalErrorHandler = require('./Controllers/errorController');
 const userRouter = require('./Routs/userRout');
 const tourRouter = require('./Routs/tourRout');
 const guideRouter = require('./Routs/guideRouts');
-const reviewRouter = require('./Routs/review');
+const reviewRouter = require('./Routs/reviewRouts');
 const faviorateRouter = require('./Routs/faviorateRouts');
-const notificationRouter = require('./Routs/notification');
+const notificationRouter = require('./Routs/notificationRouts');
 
 
 app.use(cors())

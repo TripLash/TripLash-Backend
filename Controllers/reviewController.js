@@ -35,7 +35,6 @@ exports.getAllReviews = catchAsync(async (req, res, next)=> {
     res.status(200).json(reviews);
 });
 
-
 // DELETE review endpoint
 exports.deleteReview = catchAsync(async (req, res, next) => {
     const reviewId = req.params.reviewId;

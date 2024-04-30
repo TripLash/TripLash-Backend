@@ -8,18 +8,16 @@ const AppError = require('./../util/appError');
 exports.createList = catchAsync(async(req , res , next) => {
     const {name} = req.body;
     const user = req.user;
-    console.log(user)
-    // const newList = await Faviorate.Create({
-    //     name,
-    //     user: userId,
-    //     // tours: newList.tours.push(tourId)
-    // })
-
-    //how to save a tour in tours of list while creating it????
+    // console.log(user._id)
+    const newList = await Faviorate.create({
+        name,
+        user: user._id,
+        // tours: newList.tours.push(tourId)
+    })
 
     res.status(200).json({
         status: 'success',
-        //list: newList
+        list: newList
     })
 })
 
@@ -36,9 +34,12 @@ exports.UpdateList = catchAsync(async(req ,res , next) =>{
         list.tours.push(tourId); 
         const tour = await Tour.findById(tourId);
         tour.faviorate = true;
-        tour.save();
+        await tour.save();
     }
-    if(newName){ list.name = newName; }
+    if(newName){ 
+        list.name = newName;
+        await list.save();
+     }
 
     list.save();
 
@@ -51,7 +52,7 @@ exports.UpdateList = catchAsync(async(req ,res , next) =>{
 
 //delete list
 exports.deleteList = catchAsync(async(req , res , next) =>{
-    const list = Faviorate.findbyIdAndDelete(req.params.listId);
+    const list = await Faviorate.findByIdAndDelete(req.params.listId);
     
     if(!list){
         return next(new AppError('List is not found!' , 404));
@@ -91,12 +92,29 @@ exports.getAllLists = catchAsync(async(req , res , next) =>{
 })
 
 //get list
+//TODO filter by user
 exports.getList = catchAsync(async(req , res , next) =>{
     const list = await Faviorate.findById(req.params.listId);
 
     if(!list){
         return next(new AppError('List is not found!' , 404));
     }
+
+    res.status(200).json({
+        status: 'success',
+        list
+    })
+})
+
+//delete tour from list
+exports.deleteTourList = catchAsync(async(req , res , next) =>{
+    const list = await Faviorate.findById(req.params.listId);
+    const tourId = req.body;
+    
+    const tourIndex = list.tours.indexOf(tourId.tourId);
+
+    list.tours.splice(tourIndex , 1);
+    await list.save();
 
     res.status(200).json({
         status: 'success',

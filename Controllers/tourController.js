@@ -14,7 +14,8 @@ exports.aliasTopTours = (req, res, next) => { // don't work why?????s
     req.query.sort = '-ratingsAverage,price';
     next();
   };
-  
+ 
+  //TODO filter tours
 exports.getTours = catchAsync(async (req, res, next) => {
   // Pagination options
   const page = parseInt(req.query.page) || 1; // Default page number is 1
@@ -25,10 +26,12 @@ exports.getTours = catchAsync(async (req, res, next) => {
   const sortField = req.query.sortBy || 'createdAt'; // Default sort field is 'createdAt'
   const sortOrder = req.query.sortOrder || 'desc'; // Default sort order is descending
 
+
   // Query options
-  const query = Tour.find().populate('itinerary').populate('meetingPoint');
+  const query = (await Tour.find().populate('itinerary').populate('meetingPoint'));
   query.sort({ [sortField]: sortOrder }); // Apply sorting
   query.skip(skip).limit(limit); // Apply pagination
+
 
   // Execute the query to fetch tours and count total number of tours
   const [tours, totalToursCount] = await Promise.all([
