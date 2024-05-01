@@ -30,14 +30,27 @@ exports.getAllUsers = catchAsync(async(req , res , next) =>{
     })
 });
 
-//TODO
-exports.UpdateUser = catchAsync(async(req , res , next) =>{
 
+exports.UpdateUser = catchAsync(async(req , res , next) =>{
+    // Update user object based on req.user._id
+    const user = req.user;
+    const updates = req.body;
+    // Update each field in the user object
+    Object.keys(updates).forEach(key => {
+        user[key] = updates[key];
+    });
+
+    // Save the updated user object
+    await user.save();
+
+    res.status(200).json({ user });
 });
 
-//TODO
 exports.deleteUser = catchAsync(async(req , res , next) =>{
-
+    await User.findByIdAndDelete(req.user._id);
+    return res.status(200).json({
+        status: 'success'
+    })
 })
 
 //TODO

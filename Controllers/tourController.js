@@ -18,20 +18,19 @@ exports.aliasTopTours = (req, res, next) => { // don't work why?????s
   //TODO filter tours , startdate is greater than date.now()
 exports.getTours = catchAsync(async (req, res, next) => {
   // Pagination options
-  const page = parseInt(req.query.page) || 1; // Default page number is 1
-  const limit = parseInt(req.query.limit) || 10; // Default limit is 10 tours per page
-  const skip = (page - 1) * limit; // Calculate skip value
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
 
   // Sorting options
-  const sortField = req.query.sortBy || 'createdAt'; // Default sort field is 'createdAt'
-  const sortOrder = req.query.sortOrder || 'desc'; // Default sort order is descending
+  const sortField = req.query.sortBy || 'createdAt';
+  const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1; // Determine sort order based on sortOrder parameter
 
+  // Build the query with optional population of related fields
+  const query = Tour.find().populate('itinerary').populate('meetingPoint');
 
-  // Query options
-  const query = (await Tour.find().populate('itinerary').populate('meetingPoint'));
-  query.sort({ [sortField]: sortOrder }); // Apply sorting
-  query.skip(skip).limit(limit); // Apply pagination
-
+  // Apply sorting and pagination to the query
+  query.sort({ [sortField]: sortOrder }).skip(skip).limit(limit);
 
   // Execute the query to fetch tours and count total number of tours
   const [tours, totalToursCount] = await Promise.all([
@@ -102,9 +101,15 @@ exports.createTour = catchAsync(async (req, res, next) => {
 })
 //ratingsAverage and ratingsQuantity need to be updated each time a review is added s
 
-//TODO
 exports.deleteTour = catchAsync(async (req , res , next) =>{
-
+  const tourId = req.params.id;
+  const deletedTour = await Tour.findByIdAndDelete(tourId);
+  if (!deletedTour) {
+      return res.status(404).json({ status: 'failed', message: 'Tour not found' });
+  }  
+  res.status(200).json({
+    status: 'success'
+  })  
 })
 
 //TODO + add tour to faviorate

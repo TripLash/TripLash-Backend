@@ -44,7 +44,7 @@ const createSendToken = (user, statusCode, req, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-    const { name, mobile, email, password, language } = req.body;
+    const { name, mobile, email, password, language, fcmToken } = req.body;
     const nameArray = name.split(' ');
     const firstName = nameArray[0];
     const lastName = nameArray.slice(1).join(' ');
@@ -63,6 +63,10 @@ exports.signup = catchAsync(async (req, res, next) => {
         password,
         language
     })
+    if (fcmToken) {
+        newUser.fcmToken = fcmToken;
+        await newUser.save();
+    }
 
     await Faviorate.create({
         name: 'Requested Tours',
@@ -98,13 +102,28 @@ exports.login = catchAsync(async (req, res, next) => {
             message: ms_signup_invalid_password[user.language]
         });
     }
-
+    if (req.body.fcmToken) {
+        user.fcmToken = req.body.fcmToken;
+        await user.save();
+    }
     createSendToken(user, 200, req, res);
 });
 
-//TODO
+
 exports.logout = catchAsync(async(req , res , next) =>{
-    
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    user.fcmToken = null;
+
+    await user.save();
+
+    return res.status(200).json({ message: "Logout successful" });
 })
 
 // check email 
