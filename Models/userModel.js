@@ -69,6 +69,7 @@ const userSchema = new mongoose.Schema({
     // }],
     fcmToken: String,
     photo: String,
+    stripeCustomerKey: String
     // favList: [favListSchema]
 }, {
     timestamps: true

@@ -38,13 +38,14 @@ const createSendToken = (user, statusCode, req, res) => {
             mobile: user.mobile,
             user_types: user.user_types,
             language: user.language,
-            currancy: user.currancy
+            currancy: user.currancy,
+            stripeCustomerKey: user.stripeCustomerKey
         }
     })
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-    const { name, mobile, email, password, language, fcmToken } = req.body;
+    const { name, mobile, email, password, language, fcmToken, stripeCustomerKey } = req.body;
     const nameArray = name.split(' ');
     const firstName = nameArray[0];
     const lastName = nameArray.slice(1).join(' ');
@@ -65,6 +66,10 @@ exports.signup = catchAsync(async (req, res, next) => {
     })
     if (fcmToken) {
         newUser.fcmToken = fcmToken;
+        await newUser.save();
+    }
+    if (stripeCustomerKey) {
+        newUser.stripeCustomerKey = stripeCustomerKey;
         await newUser.save();
     }
 
