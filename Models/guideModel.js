@@ -32,7 +32,16 @@ const guideSchema = new mongoose.Schema({
     identity_check: Boolean,
     show_tours: Boolean,
     fav_activities: String,
-    rate: Number
+    rate: {
+        type: Number,
+        default: 0
+    },
+    rateQuantity:{
+        type: Number,
+        default: 0
+    },
+    city: String,
+    country: String
     //calender????
 
 })

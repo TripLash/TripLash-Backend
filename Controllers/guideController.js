@@ -104,6 +104,16 @@ exports.guideTours = catchAsync(async (req , res , next) =>{
 });
 
 //TODO
+exports.updateGuide = catchAsync(async (req , res ,next) =>{
+
+})
+
+//TODO
+exports.deleteGuide = catchAsync(async (req , res , next) =>{
+    
+})
+
+//TODO
 exports.acceptApplication = catchAsync(async (req , res ,next) =>{
     //if tour.tourCategory == 'user'
 })

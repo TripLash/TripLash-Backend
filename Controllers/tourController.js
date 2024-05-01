@@ -15,7 +15,7 @@ exports.aliasTopTours = (req, res, next) => { // don't work why?????s
     next();
   };
  
-  //TODO filter tours
+  //TODO filter tours , startdate is greater than date.now()
 exports.getTours = catchAsync(async (req, res, next) => {
   // Pagination options
   const page = parseInt(req.query.page) || 1; // Default page number is 1
@@ -107,7 +107,7 @@ exports.deleteTour = catchAsync(async (req , res , next) =>{
 
 })
 
-//TODO
+//TODO + add tour to faviorate
 exports.updateTour = catchAsync(async (req , res , next) =>{
 
 })

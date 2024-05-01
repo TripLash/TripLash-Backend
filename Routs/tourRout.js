@@ -8,7 +8,7 @@ router.get('/get-all-tours' , tourController.getTours);
 router.get('/get-tour/:id' , tourController.getTour);
 router.post('/create-tour' , protect(['guide' , 'client']), tourController.createTour);
 router.get('/top-tours' , tourController.aliasTopTours); // don't work why???s
-router.delete('/delete-tour/:toutId' , tourController.deleteTour); // not finished yet
-router.patch('/update-tour/:toutId' , tourController.updateTour); // not finished yet
+router.delete('/delete-tour/:tourId' , tourController.deleteTour); // not finished yet
+router.patch('/update-tour/:tourId' , tourController.updateTour); // not finished yet
 
 module.exports = router;

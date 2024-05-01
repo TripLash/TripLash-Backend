@@ -8,8 +8,9 @@ router.post('/signup' , authController.signup);
 router.post('/login', authController.login);
 router.post('/logout' , authController.logout) //not finished yet
 
-router.get('/get-profile', protect(['client']), userController.getUser);
-router.get('/get-users' , userController.getAllUsers);
+router.get('/get-profile', protect(['client']), userController.getProfile);
+router.get('/get-all-users' , userController.getAllUsers);
+router.get('/get-user/:userId' , userController.getUser); //not finished yet
 
 router.delete('/delete-user/:userId' , userController.deleteUser); //not finished yet
 router.patch('/update-user/:userId' , userController.UpdateUser);  //not finished yet
