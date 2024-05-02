@@ -5,27 +5,31 @@ const Tour = require('../Models/tourModel');
 const {NOTIFICATION_TYPES} = require('../constants/notification-types');
 
 exports.createReview = catchAsync(async (req, res, next) => {
-    const {tour, review,  rating} = req.body;
+    const {review , tour , rating , photos} = req.body;
     const user = req.user;
-    await  Review.create({
-        user: user._id,
-        tour,
+
+    console.log(review  , tour , rating , photos);
+    const newReview = await  Review.create({
         review,
-        rating
+        tour,
+        rating,
+        user,
+        photos
     })
     const tourObj = await Tour.findById(tour);
     await sendFCMNotification(tourObj.user, 'New Review', `New review from ${user.firstname} ${user.lastname}`, NOTIFICATION_TYPES.MENU);
     res.status(201).json({
         status: "success",
-        message: 'created'
+        message: 'created',
+        newReview
     })
 });
 
 exports.getAllReviews = catchAsync(async (req, res, next)=> {
-    const { id } = req.params;
+    const { tourId } = req.params;
     const { rating } = req.query;
 
-    const filter = { tour: id };
+    const filter = { tour: tourId };
     if (rating) {
         filter.rating = rating;
     }

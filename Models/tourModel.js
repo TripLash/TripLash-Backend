@@ -37,8 +37,7 @@ const tourSchema = new mongoose.Schema({
         type: String,
         required: [true , 'tour must have description']
     },
-    durationHours: Number,
-    durationDays: Number,
+    duration: Number,
     tourType: [{
         type: String,
         enum: ['Bus Tour' , "Day Trip" , 'Walking Tour' , 'Food & Drink' , 'Bike Tour' , 'cruises'],
