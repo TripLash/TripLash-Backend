@@ -9,7 +9,11 @@ const reviewSchema = new mongoose.Schema({
     tour:{
         type: mongoose.Schema.ObjectId,
         ref: "Tour",
-        required: [true , "Review must belong to a tour"]
+        // required: [true , "Review must belong to a tour"]
+    },
+    guide:{
+        type: mongoose.Schema.ObjectId,
+        ref: "Guide"
     },
     rating: {
         type: Number,
@@ -24,7 +28,11 @@ const reviewSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    photos: [String]
+    photos: [String],
+    reviewType: {
+        type: String,
+        enum: ['tour review' , 'guide review']
+    }
 },
 {
   toJSON: { virtuals: true },

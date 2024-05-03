@@ -6,7 +6,7 @@ const protect = require('../util/middlewares');
 
 router.post('/create-tour-application', protect(['client']) , ApplicationController.createTourAppliaction);
 router.post('/create-guide-application', protect(['client']) , ApplicationController.createGuideApplication);
-router.post('/cancel-application/:appId' , protect(['client' , 'guide']) , ApplicationController.cancelApplication);//not finished yet
+router.delete('/cancel-application/:appId' , ApplicationController.cancelApplication);//not finished yet
 router.get('/get-application/:appId' , protect(['client' , 'guide']) , ApplicationController.getApplication);//not finished yet
 router.get('/get-all-applications' , protect(['client' , 'guide' , 'admin']), ApplicationController.getAllApplications); //not finished yet
 

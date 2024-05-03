@@ -3,6 +3,8 @@ const User = require('../Models/userModel')
 const Tour = require('../Models/tourModel')
 const catchAsync = require('../util/catchAsync');
 const Review = require('../Models/reviewModel');
+const GuideApplication = require('../Models/GuideAppModel');
+const AppError = require('../util/appError');
 
 
 exports.createGuide = catchAsync(async (req, res, next) => {
@@ -66,6 +68,7 @@ exports.createGuide = catchAsync(async (req, res, next) => {
 });
 
 // Get all tour guides so the client can reserve  a guide for a specific trip
+//TODO filter
 exports.getTourGuides = catchAsync(async (req ,res ,next) => {
     const guides = await Guide.find().populate('user', 'firstname lastname country city birth_date').populate({
             path: 'languages',
@@ -98,9 +101,19 @@ exports.getGuideById = catchAsync(async (req, res, next) => {
     }
 });
 
-//TODO
 exports.guideTours = catchAsync(async (req , res , next) =>{
+    const guideId = req.params.guideId;
+    const tours = await Tour.find({user: guideId});
 
+    if(!tours){
+        return next(new AppError('there is no tour for this guide'));
+    }
+
+    res.status(200).json({
+        status: 'success',
+        toursquantity: tours.length,
+        tours
+    })
 });
 
 //TODO
@@ -110,7 +123,9 @@ exports.updateGuide = catchAsync(async (req , res ,next) =>{
 
 //TODO
 exports.deleteGuide = catchAsync(async (req , res , next) =>{
-    
+  //delete applicaions
+  //await GuideApplication.deleteMany({guide: guideId});
+  //delete reviews
 })
 
 //TODO

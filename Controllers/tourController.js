@@ -4,6 +4,7 @@ const AppError = require('../util/appError');
 const APIFeatures = require('../util/apiFeatures');
 const User = require('../Models/userModel');
 const Guide = require('../Models/guideModel');
+const TourApplication = require('../Models/TourAppModel');
 
 
 
@@ -104,6 +105,8 @@ exports.createTour = catchAsync(async (req, res, next) => {
 exports.deleteTour = catchAsync(async (req , res , next) =>{
   const tourId = req.params.id;
   const deletedTour = await Tour.findByIdAndDelete(tourId);
+  await TourApplication.deleteMany({tour: tourId});
+  //TODO delete reviews
   if (!deletedTour) {
       return res.status(404).json({ status: 'failed', message: 'Tour not found' });
   }  

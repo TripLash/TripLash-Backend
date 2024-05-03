@@ -2,23 +2,32 @@ const Review = require('../Models/reviewModel');
 const catchAsync = require('../util/catchAsync');
 const {sendFCMNotification} = require('../util/generics');
 const Tour = require('../Models/tourModel');
+const Guide = require('../Models/guideModel')
 const {NOTIFICATION_TYPES} = require('../constants/notification-types');
 
+
 exports.createReview = catchAsync(async (req, res, next) => {
-    const {review , tour , rating , photos} = req.body;
+    const {review , guide , tour , rating , photos , reviewType} = req.body;
     const user = req.user;
 
-    console.log(review  , tour , rating , photos);
+    console.log(review  , guide , tour , rating , photos , reviewType);
     const newReview = await  Review.create({
         review,
         tour,
+        guide,
         rating,
         user,
-        photos
+        photos,
+        reviewType
     })
     const tourObj = await Tour.findById(tour);
-    await sendFCMNotification(tourObj.user, 'New Review', `New review from ${user.firstname} ${user.lastname}`, NOTIFICATION_TYPES.MENU);
-    res.status(201).json({
+    const guideObj = await Guide.findById(guide);
+    if(reviewType == 'tour review'){
+        await sendFCMNotification(tourObj.user, 'New Review', `New review from ${user.firstname} ${user.lastname}`, NOTIFICATION_TYPES.MENU);
+    }else if(reviewType == 'guide review'){
+        await sendFCMNotification(guideObj, 'New Review', `New review from ${user.firstname} ${user.lastname}`, NOTIFICATION_TYPES.MENU);
+    }
+        res.status(201).json({
         status: "success",
         message: 'created',
         newReview
@@ -26,25 +35,41 @@ exports.createReview = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllReviews = catchAsync(async (req, res, next)=> {
-    const { tourId } = req.params;
+    const { id } = req.params;
     const { rating } = req.query;
-
-    const filter = { tour: tourId };
+    console.log(id);
+    const tour = await Tour.findById(id);
+    const guide = await Guide.findById(id);
+    console.log(tour , guide);
+    var filter;
+    if(tour){
+        filter = { tour: id };
+        console.log('tour')
+    }else if (guide){
+        filter = { guide: id };
+        console.log('guide')
+    }
     if (rating) {
         filter.rating = rating;
     }
+    console.log(filter);
     const reviews = await Review.find(filter).populate('user', 'firstname lastname').sort({ createdAt: -1 });
     
     // console.log(reviews)
-    res.status(200).json(reviews);
+    res.status(200).json({
+        status: "success",
+        reviewsQuantity: reviews.length,
+        reviews
+    });
 });
 
 // DELETE review endpoint
 exports.deleteReview = catchAsync(async (req, res, next) => {
     const reviewId = req.params.reviewId;
-
+    console.log(reviewId);
     // Check if review exists
     const review = await Review.findById(reviewId);
+    console.log(review);
     if (!review) {
         return res.status(404).json({ status: "fail", message: "Review not found" });
     }

@@ -11,6 +11,7 @@ const guideRouter = require('./Routs/guideRouts');
 const reviewRouter = require('./Routs/reviewRouts');
 const faviorateRouter = require('./Routs/faviorateRouts');
 const notificationRouter = require('./Routs/notificationRouts');
+const applicatonRouter = require('./Routs/applicationRout');
 
 
 app.use(cors())
@@ -26,6 +27,7 @@ app.use('/api/', guideRouter);
 app.use('/api/', reviewRouter);
 app.use('/api/' , faviorateRouter)
 app.use('/api/', notificationRouter);
+app.use('/api' , applicatonRouter);
 
 const port = process.env.PORT || 3000;
 app.listen(port, ()=> {

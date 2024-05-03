@@ -110,14 +110,13 @@ exports.getList = catchAsync(async(req , res , next) =>{
 exports.deleteTourList = catchAsync(async(req , res , next) =>{
     const list = await Faviorate.findById(req.params.listId);
     const tourId = req.body;
-    
     const tourIndex = list.tours.indexOf(tourId.tourId);
 
     list.tours.splice(tourIndex , 1);
     await list.save();
 
     res.status(200).json({
-        status: 'success',
+        status: 'list deleted successfully!',
         list
     })
 })

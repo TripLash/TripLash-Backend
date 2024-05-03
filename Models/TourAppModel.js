@@ -12,7 +12,7 @@ const TourApplicationSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    participants: Number,
+    members: Number,
     total_price: Number,// not as db design there is space missing
     start_date: Date,
     end_date: Date,
