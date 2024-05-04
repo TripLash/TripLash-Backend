@@ -20,7 +20,9 @@ exports.createGuide = catchAsync(async (req, res, next) => {
         identity_photo,
         identity_check,
         show_tours,
-        fav_activities
+        fav_activities,
+        city,
+        country
     } = req.body;
 
     const user = req.user;
@@ -46,7 +48,9 @@ exports.createGuide = catchAsync(async (req, res, next) => {
                 identity_photo,
                 identity_check,
                 show_tours,
-                fav_activities
+                fav_activities,
+                city,
+                country
             });
 
             res.status(201).json({
@@ -93,8 +97,20 @@ exports.getGuideById = catchAsync(async (req, res, next) => {
         if (!guide) {
             return res.status(404).json({ status: 'fail', message: 'Guide not found' });
         }
+        const reviews = await Review.find({ reviewType: 'guide review' , guide: guide._id});
+        const user = await User.findById(guide.user);
+        console.log(user);
+        const tours = await Tour.find({ user: user });
+        console.log(tours);
 
-        res.json({ status: 'success', data: guide });
+        res.status(200).json({ 
+            status: 'success',
+             data: guide,
+             reviewsQuantity: reviews.length,
+             reviews,
+             toursQuantity: tours.length,
+             tours
+            });
     } catch (error) {
         console.error(error);
         res.status(500).json({ status: 'error', message: 'Server Error' });

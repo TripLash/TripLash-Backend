@@ -31,7 +31,7 @@ const guideSchema = new mongoose.Schema({
     identity_photo: String,
     identity_check: Boolean,
     show_tours: Boolean,
-    fav_activities: String,
+    fav_activities: [String],
     rate: {
         type: Number,
         default: 0
