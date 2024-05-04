@@ -31,11 +31,9 @@ const userSchema = new mongoose.Schema({
     },
     country:{
         type: String,
-        //Don't know what to put else here
     },
     city:{
         type: String,
-        //Don't know what to put else here
 
     },
     birth_date:{
@@ -63,14 +61,9 @@ const userSchema = new mongoose.Schema({
     code_timestamps: {
         type: Date
      },
-    // user_tours:[{
-    //     type: mongoose.Schema.ObjectId,
-    //     ref: 'Tour'
-    // }],
     fcmToken: String,
     photo: String,
     stripeCustomerKey: String
-    // favList: [favListSchema]
 }, {
     timestamps: true
 })

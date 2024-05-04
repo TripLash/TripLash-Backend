@@ -83,14 +83,12 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     })
   });
   
-  //TODO
+
   exports.cancelApplication = catchAsync(async (req , res , next) =>{
     const appId = req.params.appId;
     const Tourapplication = await TourApplication.findById(appId);
     const Guideapplication = await GuideApplication.findById(appId);
-    // console.log(Tourapplication)
     if(Tourapplication){
-      // const application = await TourApplication.findById(appId);
       if(Date.now() < Tourapplication.start_date){
         //remove members
       const tour = await Tour.findById(Tourapplication.tour.toString());
@@ -103,18 +101,17 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     }else if(Guideapplication){
       if(Date.now() < Guideapplication.start_date){
       //remove tour from tours 
-      console.log(Guideapplication.tour.toString())
-      const tour = await Tour.findById(Guideapplication.tour.toString());
-      const list = await Faviorate.find({user: tour.user , name: 'Requested tour'});
-      console.log(tour , list);
-      const tourIndex = list.tours.indexOf(Guideapplication.tour.toString());
+      const tour = await Tour.findById(Guideapplication.tour);
+      const list = await Faviorate.find({user: tour.user.toString() , name: 'Requested Tours'});
+      const tourIndex = list[0].tours.indexOf(Guideapplication.tour.toString());
       await Tour.deleteOne(tour._id);
 
       //remove tour from favriorate list
+      console.log(list[0] , list[0].tours);
       list[0].tours.splice(tourIndex , 1);
       await list[0].save();
       console.log(list);
-      await GuideApplication.delete(appId);
+      await GuideApplication.findByIdAndDelete(appId);
       }else{
         return next(new AppError('you can\'t cancel the application after begining the tour!'));
       }
