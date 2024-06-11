@@ -16,44 +16,122 @@ exports.aliasTopTours = (req, res, next) => { // don't work why?????s
     next();
   };
  
-  //TODO filter tours , startdate is greater than date.now()
+/*
+  - Search by place => done
+  - filter by tour guide languages, category, budget => done
+*/
 exports.getTours = catchAsync(async (req, res, next) => {
-  // Pagination options
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
+  try {
+    // Pagination options
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-  // Sorting options
-  const sortField = req.query.sortBy || 'createdAt';
-  const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1; // Determine sort order based on sortOrder parameter
+    // Sorting options
+    const sortField = req.query.sortBy || 'createdAt';
+    const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1; // Determine sort order based on sortOrder parameter
 
-  // Build the query with optional population of related fields
-  const query = Tour.find().populate('itinerary').populate('meetingPoint');
+    // Search options
+    const { place, maxPrice, tourTypes, languages } = req.query;
+    let searchFilter = {};
 
-  // Apply sorting and pagination to the query
-  query.sort({ [sortField]: sortOrder }).skip(skip).limit(limit);
+    // Place filter
+    if (place) {
+      const placeRegex = new RegExp(place, 'i'); // 'i' for case-insensitive
+      searchFilter = {
+        ...searchFilter,
+        $or: [
+          { title: { $regex: placeRegex } },
+          { description: { $regex: placeRegex } }
+        ]
+      };
+    }
 
-  // Execute the query to fetch tours and count total number of tours
-  const [tours, totalToursCount] = await Promise.all([
+    // Price filter
+    if (maxPrice) {
+      searchFilter = {
+        ...searchFilter,
+        price: { $lte: parseFloat(maxPrice) }
+      };
+    }
+
+    // Tour types filter
+    if (tourTypes) {
+      const typesArray = Array.isArray(tourTypes) ? tourTypes : [tourTypes];
+      searchFilter = {
+        ...searchFilter,
+        tourType: { $in: typesArray }
+      };
+    }
+
+    // Debug: Log the search filter
+    console.log('Search Filter:', searchFilter);
+
+    // Build the query with optional population of related fields
+    let query = Tour.find(searchFilter).populate('itinerary').populate('meetingPoint');
+    // Filter by guide languages
+    if (languages) {
+      const languagesArray = Array.isArray(languages) ? languages : [languages];
+      // Use aggregate to join with Guide and User collections
+      query = Tour.aggregate([
+        {
+          $lookup: {
+            from: 'guides',
+            localField: 'user',
+            foreignField: 'user',
+            as: 'guide'
+          }
+        },
+        { $unwind: '$guide' },
+        {
+          $match: {
+            'guide.languages.name': { $in: languagesArray }
+          }
+        },
+        {
+          $skip: skip
+        },
+        {
+          $limit: limit
+        },
+        {
+          $sort: { [sortField]: sortOrder }
+        }
+      ]);
+    }
+    // console.log(searchFilter);
+    // Apply sorting and pagination to the query
+    query.sort({ [sortField]: sortOrder }).skip(skip).limit(limit);
+
+    // Debug: Log the final query
+    // console.log('Final Query:', query);
+
+    // Execute the query to fetch tours and count total number of tours
+    const [tours, totalToursCount] = await Promise.all([
       query.exec(),
-      Tour.countDocuments()
-  ]);
+      Tour.countDocuments(searchFilter)
+    ]);
 
-  // Calculate total number of pages
-  const totalPages = Math.ceil(totalToursCount / limit);
+    // Calculate total number of pages
+    const totalPages = Math.ceil(totalToursCount / limit);
 
-  // Return a response with the fetched tours and pagination metadata
-  res.status(200).json({
+    // Return a response with the fetched tours and pagination metadata
+    res.status(200).json({
       status: 'success',
       pagination: {
-          totalItems: totalToursCount,
-          totalPages,
-          currentPage: page,
-          limit
+        totalItems: totalToursCount,
+        totalPages,
+        currentPage: page,
+        limit
       },
       data: tours
-  });
+    });
+  } catch (error) {
+    console.error('Error fetching tours:', error);
+    next(error);
+  }
 });
+
   
 exports.getTour = catchAsync(async (req, res, next) => {
   const { id } = req.params;

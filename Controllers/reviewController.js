@@ -34,28 +34,32 @@ exports.createReview = catchAsync(async (req, res, next) => {
     })
 });
 
-exports.getAllReviews = catchAsync(async (req, res, next)=> {
+exports.getAllReviews = catchAsync(async (req, res, next) => {
     const { id } = req.params;
     const { rating } = req.query;
-    console.log(id);
+
     const tour = await Tour.findById(id);
     const guide = await Guide.findById(id);
-    console.log(tour , guide);
-    var filter;
-    if(tour){
-        filter = { tour: id };
-        console.log('tour')
-    }else if (guide){
-        filter = { guide: id };
-        console.log('guide')
+
+    let filter = {};
+
+    if (tour) {
+        filter.tour = id;
+        console.log('tour');
+    } 
+    if (guide) {
+        filter.guide = id;
+        console.log('guide');
     }
+
     if (rating) {
         filter.rating = rating;
     }
-    console.log(filter);
-    const reviews = await Review.find(filter).populate('user', 'firstname lastname').sort({ createdAt: -1 });
-    
-    // console.log(reviews)
+
+    const reviews = await Review.find(filter)
+        .populate('user', 'firstname lastname')
+        .sort({ createdAt: -1 });
+
     res.status(200).json({
         status: "success",
         reviewsQuantity: reviews.length,
