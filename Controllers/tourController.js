@@ -167,6 +167,10 @@ exports.createTour = catchAsync(async (req, res, next) => {
     newTourData.faviorate = true;
   };
   //TODO is it legal to equal two lists??
+  if (req.files && req.files.length > 0) {
+    newTourData.photos = req.files.map(file => file.path);
+  }
+  console.log(req);
   const newTour = new Tour(newTourData);
 
   // Save the new tour to the database

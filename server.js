@@ -12,6 +12,7 @@ const reviewRouter = require('./Routs/reviewRouts');
 const faviorateRouter = require('./Routs/faviorateRouts');
 const notificationRouter = require('./Routs/notificationRouts');
 const applicatonRouter = require('./Routs/applicationRout');
+const path = require('path');
 
 
 app.use(cors())
@@ -19,6 +20,8 @@ connect_db()
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 app.use(globalErrorHandler);
 app.use('/api/', userRouter);

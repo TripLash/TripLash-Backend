@@ -3,7 +3,8 @@ const admin = require('../firebase-admin');
 const Notification = require('../Models/notificationModels');
 const {NOTIFICATION_TYPES } = require('../constants/notification-types');
 const User = require('../Models/userModel');
-
+const multer = require('multer');
+const path = require('path');
 
 exports.generateVerificationCode = () => {
     const min = 1000; // Minimum 4-digit number
@@ -70,3 +71,19 @@ exports.sendFCMNotification = async (user, title, body, notification_type) => {
     console.error(`Error sending FCM notification: ${error.message}`);
   }
 }
+
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Specify the destination folder where files will be stored
+    cb(null, 'uploads');
+  },
+  filename: function (req, file, cb) {
+    // Generate a unique filename for each uploaded file
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+// Initialize multer upload middleware
+exports.upload = multer({ storage: storage });
