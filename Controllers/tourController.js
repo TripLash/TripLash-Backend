@@ -201,3 +201,11 @@ exports.deleteTour = catchAsync(async (req , res , next) =>{
 exports.updateTour = catchAsync(async (req , res , next) =>{
 
 })
+
+exports.deleteAllTours = catchAsync(async (req , res , next) =>{
+  await Tour.deleteMany();
+
+  res.status(200).json({
+    "message": "all tours deleted successfully!"
+  })
+});

@@ -130,6 +130,16 @@ exports.getApplication = catchAsync(async (req , res , next) =>{
 });
 
 //TODO
+exports.getUserApplication = catchAsync(async (req , res , next) =>{
+
+});
+
+//TODO
+exports.getGuideApplication = catchAsync(async (req , res , next) =>{
+  
+});
+
+//TODO
 exports.getAllApplications = catchAsync(async (req , res , next) =>{
 
 })

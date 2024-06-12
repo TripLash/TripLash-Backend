@@ -2,15 +2,16 @@ const mongoose = require('mongoose');
 const Review = require('./reviewModel');
 
 
-const itinerarySchema = new mongoose.Schema({
-    title: String,
-    objects: [{
-        description: String,
+const dayDetailSchema = new mongoose.Schema({
+    description: String,
         location: {
             lat: Number,
             long: Number
         }
-    }]
+})
+const itinerarySchema = new mongoose.Schema({
+    title: String,
+    objects: [dayDetailSchema]
 });
 
 const meetingPointSchema = new mongoose.Schema({
@@ -37,7 +38,10 @@ const tourSchema = new mongoose.Schema({
         type: String,
         required: [true , 'tour must have description']
     },
-    duration: Number,
+    duration: {
+        type: Number,
+        default: 0
+    },
     tourType: [{
         type: String,
         enum: ['Bus Tour' , "Day Trip" , 'Walking Tour' , 'Food & Drink' , 'Bike Tour' , 'cruises'],
@@ -68,7 +72,15 @@ const tourSchema = new mongoose.Schema({
     included:[String],
     excluded:[String],
     cash:[String],
-    price:{
+    adult_price:{
+        type: Number,
+        required: [true , "tour must have price!"]
+    },
+    child_price:{
+        type: Number,
+        required: [true , "tour must have price!"]
+    },
+    infant_price:{
         type: Number,
         required: [true , "tour must have price!"]
     },
