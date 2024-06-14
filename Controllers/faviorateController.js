@@ -80,7 +80,7 @@ exports.getUserLists = catchAsync(async(req , res , next) =>{
 
 //get all users lists (for admin)
 exports.getAllLists = catchAsync(async(req , res , next) =>{
-    const lists = await Faviorate.find();
+    const lists = await Faviorate.find(req.query);
 
     res.status(200).json({
         status: 'success',
@@ -92,7 +92,6 @@ exports.getAllLists = catchAsync(async(req , res , next) =>{
 })
 
 //get list
-//TODO filter by user
 exports.getList = catchAsync(async(req , res , next) =>{
     const list = await Faviorate.findById(req.params.listId);
 

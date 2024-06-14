@@ -9,12 +9,12 @@ router.post('/login', authController.login);
 router.post('/logout', protect(['client', 'guide']) , authController.logout)
 
 router.get('/get-profile', protect(['client']), userController.getProfile);
-router.get('/get-all-users' , userController.getAllUsers);
-router.get('/get-user/:userId' , userController.getUser);
+router.get('/get-all-users' , protect(['admin']) , userController.getAllUsers);
+router.get('/get-user/:userId' , protect(['admin']) , userController.getUser);
 
 router.delete('/delete-user/', protect(['client', 'guide']) , userController.deleteUser);
 router.patch('/update-profile/', protect(['client', 'guide']), userController.UpdateUser); 
-router.patch('/add-admin/:userId' , userController.addAdmin);
+router.patch('/add-admin/:userId' , protect(['admin']) , userController.addAdmin);
 
 
 // reset password

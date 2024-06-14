@@ -7,7 +7,7 @@ router.post("/create-List", protect(["client" , "guide"]) , faviorateController.
 router.patch("/update-list/:listId", faviorateController.UpdateList);
 router.delete("/delete-list/:listId", faviorateController.deleteList);
 router.get("/get-list/:listId", faviorateController.getList);
-router.get("/get-all-lists", faviorateController.getAllLists);
+router.get("/get-all-lists" , protect(['admin']), faviorateController.getAllLists);
 router.get("/get-user-lists" , protect(['client']) , faviorateController.getUserLists);
 router.delete("/delete-list-tour/:listId" , faviorateController.deleteTourList);
 

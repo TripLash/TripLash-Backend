@@ -12,6 +12,6 @@ router.post('/create-tour' , protect(['guide' , 'client']), upload.array('photos
 router.get('/top-tours' , tourController.aliasTopTours); // don't work why???s
 router.delete('/delete-tour/:id', protect(['guide' , 'client', 'admin']), tourController.deleteTour);
 router.patch('/update-tour/:tourId' , tourController.updateTour); // not finished yet
-router.delete('/delete-all-tours' , tourController.deleteAllTours);
+router.delete('/delete-all-tours' , protect(['admin']) , tourController.deleteAllTours);
 
 module.exports = router;
