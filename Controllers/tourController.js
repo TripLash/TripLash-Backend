@@ -163,10 +163,10 @@ exports.createTour = catchAsync(async (req, res, next) => {
   // Create a new tour instance using the request body
   const newTourData = req.body;
   newTourData.user = user._id; // Associate the user with the tour
+  newTourData.creationDate = Date.now();
   if(newTourData.tourType === 'user') {
     newTourData.faviorate = true;
   };
-  //TODO is it legal to equal two lists??
   if (req.files && req.files.length > 0) {
     newTourData.photos = req.files.map(file => file.path);
   }
@@ -197,7 +197,7 @@ exports.deleteTour = catchAsync(async (req , res , next) =>{
   })  
 })
 
-//TODO + add tour to faviorate
+//TODO
 exports.updateTour = catchAsync(async (req , res , next) =>{
 
 })

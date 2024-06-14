@@ -14,6 +14,7 @@ router.get('/get-user/:userId' , userController.getUser);
 
 router.delete('/delete-user/', protect(['client', 'guide']) , userController.deleteUser);
 router.patch('/update-profile/', protect(['client', 'guide']), userController.UpdateUser); 
+router.patch('/add-admin/:userId' , userController.addAdmin);
 
 
 // reset password

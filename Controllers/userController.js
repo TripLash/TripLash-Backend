@@ -53,10 +53,17 @@ exports.deleteUser = catchAsync(async(req , res , next) =>{
     })
 })
 
-//TODO
 exports.getUser = catchAsync(async(req , res , next) =>{
     const id = req.params.userId;
     const user = await User.findById(id);
     
     res.status(200).json({ user });
-})
+});
+
+exports.addAdmin = catchAsync(async(req , res , next) =>{
+    const id = req.params.userId;
+    const user = await User.findById(id);
+    await user.addRole('admin');
+    await user.save();
+    res.status(200).json({ user });
+});

@@ -18,16 +18,18 @@ const GuideApplicationSchema = new mongoose.Schema({
         required: true
     },
     participants: Number,
-    total_price: Number,// not as db design there is space missing
+    adult_price: Number,
+    child_price: Number,
+    infant_price: Number,
     start_date: Date,
     end_date: Date,
     start_time: Number,
     status: {
         type: String,
         enum:
-        ['finished' , 'active' , 'pendening']
+        ['finished' , 'active' , 'pendening' , 'upcoming']
     },
-
+    creation_date: Date
 });
 
 module.exports = mongoose.model('GuideApplication', GuideApplicationSchema);

@@ -7,10 +7,12 @@ const Guide = require('../Models/guideModel');
 const Faviorate = require('../Models/faviorateModel');
 const AppError = require('../util/appError');
 const catchAsync = require("../util/catchAsync");
+const TourAppModel = require('../Models/TourAppModel');
+const ApiFeatures = require('../util/apiFeatures');
 
 
 
-// create application for public and private tour 
+//create application for public and private tour 
 exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     const user = req.user;
     const data = req.body;
@@ -34,6 +36,7 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     });
   });
 
+//create application for private guide
   exports.createGuideApplication = catchAsync(async (req , res , next) =>{
     const data = req.body;
     const user = req.user;
@@ -42,14 +45,15 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     // console.log(user._id.toString());
     const list = await Faviorate.find({user: user._id.toString() , name: 'Requested Tours'});
     const tour = await Tour.findById(data.tour);
-    const guide = await Guide.findById(data.tour_guide);
     console.log(list);
     // console.log(tour);
     if(tour.tourCategory !== 'user'){
         const newTour = await Tour.create({
             title:tour.title,
             user,
+            photos:tour.photos,
             description:tour.description,
+            itinerary:tour.itinerary,
             duration: tour.duration,
             tourType: tour.tourType, 
             itinerary:tour.itinerary, 
@@ -57,15 +61,19 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
             transportation:tour.transportation,
             included:tour.included,
             excluded:tour.excluded,
-            cancelationPolicy: tour.cancelationPolicy,
-            price: data.total_price,
-            city: tour.city,
-            country: tour.country,
-            participants: data.participants,
-            members: data.participants,
-            startDate: data.startDate,
+            cash: tour.cash,
+            adult_price: data.adult_price,
+            child_price: data.child_price,
+            infant_price: data.infant_price,
+            creation_date: Date.now(),
             tourCategory: 'user',
             faviorate: true,
+            participants: data.participants,
+            members: data.participants,
+            cancelationPolicy: tour.cancelationPolicy,
+            startDate: data.startDate,
+            city: tour.city,
+            country: tour.country,
         });
         data.tour = newTour._id.toString();
         // console.log(newTour);
@@ -74,6 +82,7 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     list[0].tours.push(data.tour);
     list[0].save();
     console.log(list);
+    data.creation_date = Date.now();
 
     const newGuideApp = await GuideApplication.create(data);
 
@@ -83,7 +92,7 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     })
   });
   
-
+//cancel application
   exports.cancelApplication = catchAsync(async (req , res , next) =>{
     const appId = req.params.appId;
     const Tourapplication = await TourApplication.findById(appId);
@@ -124,22 +133,68 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     })
   });
 
-//TODO
+//get one application
 exports.getApplication = catchAsync(async (req , res , next) =>{
-
+  const appId = req.params.appId;
+  var app = await TourApplication.findById(appId);
+  if(!app){
+    app = await GuideApplication.findById(appId);
+  }
+  res.status(200).json({
+    status:'success',
+    app
+  })
 });
 
-//TODO
-exports.getUserApplication = catchAsync(async (req , res , next) =>{
+//get user applications (tours , guides)
+exports.getUserApplications = catchAsync(async (req , res , next) =>{
+  const userId = req.user._id;
 
+  // const tourApps = await TourApplication.find({user: userId} , {queryObj}).populate('tour');
+  // const guideApps = await GuideApplication.find({user: userId} , {queryObj}).populate('tour');
+
+  const filterdT = new ApiFeatures(TourApplication.find({user: userId}) , req.query).Filter();
+  const filterdG = new ApiFeatures(GuideApplication.find({user: userId}) , req.query).Filter();
+
+  const tours = await filterdT.query.populate('tour');
+  const guides = await filterdG.query.populate('tour');
+
+  let app = [];
+  app.push.apply(app , tours);
+  app.push.apply(app , guides);
+
+  res.status(200).json({
+    status:'success',
+    applications: app
+  })
 });
 
-//TODO
-exports.getGuideApplication = catchAsync(async (req , res , next) =>{
+//get guide requests
+exports.getGuideApplications = catchAsync(async (req , res , next) =>{
+  const userId = req.user._id;
+  const guide = await Guide.find({user: userId});
+  const guideApps = await GuideApplication.find({tour_guide: guide}).sort({ 'creation_date': 'desc' });
+
+  res.status(200).json({
+    status:'success',
+    guideApps
+  })
+});
+
+exports.getAllToursApplications = catchAsync(async (req , res , next) =>{
+  const toursApp = await TourApplication.find();
+
+  res.status(200).json({
+    status:'success',
+    toursApp
+  })
+})
+
+exports.getAllGuidesApplications = catchAsync(async (req , res , next) =>{
+  const guidesApp = await GuideApplication.find();
   
-});
-
-//TODO
-exports.getAllApplications = catchAsync(async (req , res , next) =>{
-
+  res.status(200).json({
+    status:'success',
+    guidesApp
+  })
 })

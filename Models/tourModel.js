@@ -74,15 +74,15 @@ const tourSchema = new mongoose.Schema({
     cash:[String],
     adult_price:{
         type: Number,
-        required: [true , "tour must have price!"]
+        required: [true , "tour must have adult price!"]
     },
     child_price:{
         type: Number,
-        required: [true , "tour must have price!"]
+        required: [true , "tour must have child price!"]
     },
     infant_price:{
         type: Number,
-        required: [true , "tour must have price!"]
+        required: [true , "tour must have infant price!"]
     },
     tourCategory:{
         type: String,
