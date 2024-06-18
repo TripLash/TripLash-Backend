@@ -4,7 +4,9 @@ const Tour = require('../Models/tourModel')
 const catchAsync = require('../util/catchAsync');
 const Review = require('../Models/reviewModel');
 const GuideApplication = require('../Models/GuideAppModel');
+const TourApplication = require('../Models/TourAppModel');
 const AppError = require('../util/appError');
+const ApiFeature = require('../util/apiFeatures');
 
 
 exports.createGuide = catchAsync(async (req, res, next) => {
@@ -72,21 +74,40 @@ exports.createGuide = catchAsync(async (req, res, next) => {
 });
 
 // Get all tour guides so the client can reserve  a guide for a specific trip
-//TODO filter
 exports.getTourGuides = catchAsync(async (req ,res ,next) => {
-    const guides = await Guide.find().populate('user', 'firstname lastname country city birth_date').populate({
-            path: 'languages',
-            select: 'name experience'
-        });
+    const languages = req.query.languages; // Expecting a comma-separated list of languages
+    const hourPrice = req.query.hourPrice; // Expecting a number
 
-    res.json(guides);
+    let query = {};
+
+    if (languages) {
+    const languageArray = languages.split(',').map(lang => lang.trim());
+    query['languages.name'] = { $all: languageArray };
+    }
+
+    if (hourPrice) {
+    query.hourPrice = { $lte: parseFloat(hourPrice) };
+    }
+    
+    const guides = await Guide.find(query).populate('user', 'firstname lastname country city birth_date').populate({
+        path: 'languages',
+        select: 'name experience'
+    });
+
+    res.json({
+        status:'success',
+        guidesQuantity: guides.length,
+        data:guides
+    });
 })
 
-exports.getGuideById = catchAsync(async (req, res, next) => {
-    const guideId = req.params.id;
+//TODO: don't find any guide why?
+exports.getGuide = catchAsync(async (req, res, next) => {
+    const guideId = req.user;
+    console.log(guideId._id.toString());
 
     try {
-        const guide = await Guide.findById(guideId)
+        const guide = await Guide.findById(guideId._id)
             .populate('user', 'firstname lastname country city birth_date')
             .populate({
                 path: 'languages',
@@ -121,6 +142,8 @@ exports.guideTours = catchAsync(async (req , res , next) =>{
     const guideId = req.params.guideId;
     const tours = await Tour.find({user: guideId});
 
+    //TODO handle tours that user requested (user tours)
+
     if(!tours){
         return next(new AppError('there is no tour for this guide'));
     }
@@ -137,14 +160,48 @@ exports.updateGuide = catchAsync(async (req , res ,next) =>{
 
 })
 
-//TODO
+//TODO guide don't deleted
 exports.deleteGuide = catchAsync(async (req , res , next) =>{
-  //delete applicaions
-  //await GuideApplication.deleteMany({guide: guideId});
-  //delete reviews
+    const guide = req.user;
+    //delete guide
+    await Guide.findByIdAndDelete(guide);
+    //delete applicaions
+    await GuideApplication.deleteMany({tour_guide: guide});
+    await TourApplication.deleteMany({'tour.user': guide});
+    //delete tours
+    await Tour.deleteMany({user: guide});
+    //delete reviews
+    await Review.deleteMany({guide: guide});
+    
+    
+    res.status(200).json({
+        status:'Guide deleted successfully!'
+    })
 })
 
-//TODO
+//TODO add notification here for client
 exports.acceptApplication = catchAsync(async (req , res ,next) =>{
-    //if tour.tourCategory == 'user'
+    //make application's status upcomming
+    const appId = req.params
+    const application = await GuideApplication.findById(appId);
+    application.status = 'upcomming';
+    await application.save();
+
+    const pendingApplications = await GuideApplication.find({ status: 'pendening' });
+    
+    //TODO: add notification for client
+    //use application.user as the id of the user
+    
+    
+    
+    //add tour to guide's tours
+    // const guide = await Guide.findById(application.guide);
+    // guide.tours.push(application.tour);
+    // await guide.save();
+
+    res.status(200).json({
+        status:'success',
+        pendingApplications: pendingApplications
+    })
+
 })

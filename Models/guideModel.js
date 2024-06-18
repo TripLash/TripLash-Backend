@@ -14,14 +14,6 @@ const guideSchema = new mongoose.Schema({
         unique: [true , 'user already have guide account']
     },
     languages:[languageSchema],
-    // liveIn:{
-    //     country: String,
-    //     city: String,
-    //     location:{
-    //         lat: Number,
-    //         long: Number
-    //     }
-    // },
     aboutYou: String,
     hourPrice: Number,
     halfDayPrice: Number,
@@ -29,7 +21,10 @@ const guideSchema = new mongoose.Schema({
     included: [String],
     guideIn: [String],
     identity_photo: String,
-    identity_check: Boolean,
+    identity_check: {
+        type: Boolean,
+        required: true
+    },
     show_tours: Boolean,
     fav_activities: [String],
     rate: {

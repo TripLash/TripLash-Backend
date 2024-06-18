@@ -67,3 +67,13 @@ exports.addAdmin = catchAsync(async(req , res , next) =>{
     await user.save();
     res.status(200).json({ user });
 });
+//TODO:
+exports.deleteUser = catchAsync(async(req , res , next) =>{
+    await User.findByIdAndDelete(req.user._id);
+    //delete applications of this user from guide and tour applications
+    //delete tours that user create 
+    //if there is guide delete it 
+    return res.status(200).json({
+        status:'user deleted successfully!'
+    })
+});

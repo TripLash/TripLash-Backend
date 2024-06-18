@@ -13,6 +13,7 @@ const ApiFeatures = require('../util/apiFeatures');
 
 
 //create application for public and private tour 
+//TODO: notification on private tour for guide
 exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     const user = req.user;
     const data = req.body;
@@ -27,9 +28,13 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     }else{
         return next(new AppError('remaining places isn\'t enough!'));
     }
+    }else if(tourID.tourCategory === 'private'){
+      //TODO: add notification here for guide
+      // use tourID.user as the id of guide
     }
-    // console.log(data);
+    
     const newTourApp = await TourApplication.create(data);
+
     res.status(201).json({
       status: "success",
       data: newTourApp
@@ -37,6 +42,7 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
   });
 
 //create application for private guide
+//TODO notification for guide
   exports.createGuideApplication = catchAsync(async (req , res , next) =>{
     const data = req.body;
     const user = req.user;
@@ -84,7 +90,10 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     console.log(list);
     data.creation_date = Date.now();
 
-    const newGuideApp = await GuideApplication.create(data);
+    const newGuideApp = (await GuideApplication.create(data)).populate('tour' , 'user' , 'tour_guide');
+
+    //TODO: add notifiaction for guide here
+    //use data.guide as the id of the guide
 
     res.status(200).json({
         status: 'success',
@@ -93,6 +102,7 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
   });
   
 //cancel application
+//TODO notification for guide and client
   exports.cancelApplication = catchAsync(async (req , res , next) =>{
     const appId = req.params.appId;
     const Tourapplication = await TourApplication.findById(appId);
@@ -103,10 +113,22 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
       const tour = await Tour.findById(Tourapplication.tour.toString());
       tour.members = tour.members - Tourapplication.members;
       tour.save();
+      const tourCategory = tour.tourCategory;
       await TourApplication.findByIdAndDelete(appId);
+
+      if(tourCategory === 'private'){
+      //TODO: add notificaition here for guide and client
+      }
+
+      res.status(200).json({
+        status: "application has been canceled successfully!",
+        "data": TourApplication
+      })
+
       }else{
         return next(new AppError('you can\'t cancel the application after begining the tour!'));
       }
+        
     }else if(Guideapplication){
       if(Date.now() < Guideapplication.start_date){
       //remove tour from tours 
@@ -121,16 +143,21 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
       await list[0].save();
       console.log(list);
       await GuideApplication.findByIdAndDelete(appId);
+
+      //TODO: add notificaition here for guide and client
+
+
+      res.status(200).json({
+        status: "application has been canceled successfully!",
+        "data": Guideapplication
+      })
+
       }else{
         return next(new AppError('you can\'t cancel the application after begining the tour!'));
       }
     }else{
       return next(new AppError('application isn\'t exist!' , 404));
     }
-
-    res.status(200).json({
-      status: "application has been canceled successfully!"
-    })
   });
 
 //get one application
@@ -149,9 +176,6 @@ exports.getApplication = catchAsync(async (req , res , next) =>{
 //get user applications (tours , guides)
 exports.getUserApplications = catchAsync(async (req , res , next) =>{
   const userId = req.user._id;
-
-  // const tourApps = await TourApplication.find({user: userId} , {queryObj}).populate('tour');
-  // const guideApps = await GuideApplication.find({user: userId} , {queryObj}).populate('tour');
 
   const filterdT = new ApiFeatures(TourApplication.find({user: userId}) , req.query).Filter();
   const filterdG = new ApiFeatures(GuideApplication.find({user: userId}) , req.query).Filter();

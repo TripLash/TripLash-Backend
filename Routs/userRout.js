@@ -15,6 +15,7 @@ router.get('/get-user/:userId' , protect(['admin']) , userController.getUser);
 router.delete('/delete-user/', protect(['client', 'guide']) , userController.deleteUser);
 router.patch('/update-profile/', protect(['client', 'guide']), userController.UpdateUser); 
 router.patch('/add-admin/:userId' , protect(['admin']) , userController.addAdmin);
+router.delete('/delete-user/', protect(['client']), userController.deleteUser);//not implemented
 
 
 // reset password
