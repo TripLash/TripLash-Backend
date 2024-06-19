@@ -101,13 +101,13 @@ exports.getTourGuides = catchAsync(async (req ,res ,next) => {
     });
 })
 
-//TODO: don't find any guide why?
+// don't find any guide why?
 exports.getGuide = catchAsync(async (req, res, next) => {
-    const guideId = req.user;
-    console.log(guideId._id.toString());
+    const guideId = req.params.id;
+    // console.log(guideId._id.toString());
 
     try {
-        const guide = await Guide.findById(guideId._id)
+        const guide = await Guide.findById(guideId)
             .populate('user', 'firstname lastname country city birth_date')
             .populate({
                 path: 'languages',
@@ -120,9 +120,9 @@ exports.getGuide = catchAsync(async (req, res, next) => {
         }
         const reviews = await Review.find({ reviewType: 'guide review' , guide: guide._id});
         const user = await User.findById(guide.user);
-        console.log(user);
+        // console.log(user);
         const tours = await Tour.find({ user: user });
-        console.log(tours);
+        // console.log(tours);
 
         res.status(200).json({ 
             status: 'success',
