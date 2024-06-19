@@ -191,7 +191,7 @@ exports.deleteTour = catchAsync(async (req , res , next) =>{
   const tourId = req.params.id;
   const deletedTour = await Tour.findByIdAndDelete(tourId);
   await TourApplication.deleteMany({tour: tourId});
-  //TODO delete reviews
+  // delete reviews
   if (!deletedTour) {
       return res.status(404).json({ status: 'failed', message: 'Tour not found' });
   }  
