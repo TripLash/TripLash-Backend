@@ -51,7 +51,7 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     // console.log(user._id.toString());
     const list = await Faviorate.find({user: user._id.toString() , name: 'Requested Tours'});
     const tour = await Tour.findById(data.tour);
-    console.log(list);
+    // console.log(list);
     // console.log(tour);
     if(tour.tourCategory !== 'user'){
         const newTour = await Tour.create({

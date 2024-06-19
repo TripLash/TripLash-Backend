@@ -10,7 +10,6 @@ router.get('/get-all-tours' , tourController.getTours);
 router.get('/get-all-tours-protect/', protect(['client', 'guide', 'admin']) , tourController.getTours);
 router.get('/get-tour/:id' , tourController.getTour);
 router.post('/create-tour' , protect(['guide' , 'client']), upload.array('photos'), tourController.createTour);
-router.get('/top-tours' , tourController.aliasTopTours); // don't work why???s
 router.delete('/delete-tour/:id', protect(['guide' , 'client', 'admin']), tourController.deleteTour);
 router.patch('/update-tour/:tourId' , tourController.updateTour); // not finished yet
 router.delete('/delete-all-tours' , protect(['admin']) , tourController.deleteAllTours);

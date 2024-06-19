@@ -7,14 +7,6 @@ const Guide = require('../Models/guideModel');
 const TourApplication = require('../Models/TourAppModel');
 const UserSearch = require('../Models/userSearchModel');
 
-
-
-//TODO don't work
-exports.aliasTopTours = (req, res, next) => { // don't work why?????s
-    req.query.limit = '5';
-    req.query.sort = '-ratingsAverage,price';
-    next();
-  };
  
 /*
   - Search by place => done

@@ -30,7 +30,7 @@ exports.getAllChatrooms = catchAsync(async (req , res , next) =>{
     res.json(chatrooms);
 });
 
-// update this endpoint to update isRead field to true
+
 exports.getChatroomMessages = catchAsync(async (req , res , next) =>{
     const messages = await Message.find({ chatroom: req.params.chatroomId }).populate('sender', 'firstname lastname photo').populate('receiver', 'firstname lastname photo');
     // update unread messages
