@@ -5,7 +5,7 @@ const APIFeatures = require('../util/apiFeatures');
 const User = require('../Models/userModel');
 const Guide = require('../Models/guideModel');
 const TourApplication = require('../Models/TourAppModel');
-
+const UserSearch = require('../Models/userSearchModel');
 
 
 
@@ -45,6 +45,9 @@ exports.getTours = catchAsync(async (req, res, next) => {
           { description: { $regex: placeRegex } }
         ]
       };
+      if (req.user) {
+        await UserSearch.create({ user: req.user._id, search: place });
+      }
     }
 
     // Price filter
@@ -209,3 +212,12 @@ exports.deleteAllTours = catchAsync(async (req , res , next) =>{
     "message": "all tours deleted successfully!"
   })
 });
+
+
+exports.getLastSearch = catchAsync(async (req , res , next) =>{
+  const lastSearch = await LastSearch.find().sort({timestamp: -1});
+  res.status(200).json({
+    status: 'success',
+    lastSearch
+  })
+})
