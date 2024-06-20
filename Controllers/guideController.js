@@ -180,9 +180,23 @@ exports.deleteGuideAccount = catchAsync(async (req , res , next) =>{
     })
 });
 
-//TODO: for admin only
+//for admin only
 exports.deleteGuide = catchAsync(async(req ,res , next) => {
-
+    const guide = req.params.guideId;
+    //delete guide
+    await Guide.findByIdAndDelete(guide);
+    //delete applicaions
+    await GuideApplication.deleteMany({tour_guide: guide});
+    await TourApplication.deleteMany({'tour.user': guide});
+    //delete tours
+    await Tour.deleteMany({user: guide});
+    //delete reviews
+    await Review.deleteMany({guide: guide});
+    
+    
+    res.status(200).json({
+        status:'Guide deleted successfully!'
+    })
 });
 
 //TODO add notification here for client

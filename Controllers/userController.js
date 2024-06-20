@@ -71,9 +71,25 @@ exports.deleteAccount = catchAsync(async(req , res , next) =>{
     })
 });
 
-//TODO:for admin only
-exports.deleteUser = catchAsync(async(req ,res , next) => {
 
+exports.deleteUser = catchAsync(async(req ,res , next) => {
+    const user = req.params.userId;
+    await User.findByIdAndDelete(req.user);
+    //delete applications of this user from guide and tour applications
+    await GuideApp.findOneAndDelete({user: user});
+    await TourApp.findOneAndDelete({user: user});
+    //delete tours that user create 
+    await Tour.deleteMany({user: user});
+    //if there is guide delete it 
+    const guide  = await Guide.find({user: user});
+    if(guide){
+        await Guide.findByIdAndDelete(guide._id);
+    }
+
+
+    return res.status(200).json({
+        status:'user deleted successfully!'
+    })
 });
 
 exports.getUser = catchAsync(async(req , res , next) =>{
