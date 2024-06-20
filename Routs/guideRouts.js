@@ -9,6 +9,8 @@ router.get('/guide/:id', protect(['client', 'guide', 'admin']) , guideController
 router.get('/guide-tours/:guideId' , guideController.guideTours);
 router.get('/accept-application' , guideController.acceptApplication) 
 router.patch('/update-guide' , guideController.updateGuide) // not finished yet
-router.delete('/delete-guide' , protect(['guide']) , guideController.deleteGuide) 
+router.delete('/delete-guide-account' , protect(['guide']) , guideController.deleteGuideAccount);
+router.delete('/delete-guide' , protect(['admin']) , guideController.deleteGuide);// not finished yet
+
 
 module.exports = router;

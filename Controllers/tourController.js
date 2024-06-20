@@ -194,7 +194,7 @@ exports.deleteTour = catchAsync(async (req , res , next) =>{
 
 //TODO
 exports.updateTour = catchAsync(async (req , res , next) =>{
-
+  
 })
 
 exports.deleteAllTours = catchAsync(async (req , res , next) =>{
@@ -207,7 +207,7 @@ exports.deleteAllTours = catchAsync(async (req , res , next) =>{
 
 
 exports.getLastSearch = catchAsync(async (req , res , next) =>{
-  const lastSearch = await LastSearch.find().sort({timestamp: -1});
+  const lastSearch = await UserSearch.find().sort({timestamp: -1});
   res.status(200).json({
     status: 'success',
     lastSearch

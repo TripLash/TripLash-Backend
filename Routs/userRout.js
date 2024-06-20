@@ -12,11 +12,10 @@ router.get('/get-profile', protect(['client']), userController.getProfile);
 router.get('/get-all-users' , protect(['admin']) , userController.getAllUsers);
 router.get('/get-user/:userId' , protect(['admin']) , userController.getUser);
 
-router.delete('/delete-user/', protect(['client', 'guide']) , userController.deleteUser);
+router.delete('/delete-user/', protect(['admin']) , userController.deleteUser);//not implemented
+router.delete('/delete-account/', protect(['client', 'guide']) , userController.deleteAccount);
 router.patch('/update-profile/', protect(['client', 'guide']), userController.UpdateUser); 
 router.patch('/add-admin/:userId' , protect(['admin']) , userController.addAdmin);
-router.delete('/delete-user/', protect(['client']), userController.deleteUser);//not implemented
-
 
 // reset password
 router.post('/check-email', authController.checkEmail);

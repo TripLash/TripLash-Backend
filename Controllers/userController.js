@@ -51,7 +51,7 @@ exports.UpdateUser = catchAsync(async(req , res , next) =>{
 });
 
 
-exports.deleteUser = catchAsync(async(req , res , next) =>{
+exports.deleteAccount = catchAsync(async(req , res , next) =>{
     const user = req.user;
     await User.findByIdAndDelete(req.user);
     //delete applications of this user from guide and tour applications
@@ -69,7 +69,12 @@ exports.deleteUser = catchAsync(async(req , res , next) =>{
     return res.status(200).json({
         status:'user deleted successfully!'
     })
-})
+});
+
+//TODO:for admin only
+exports.deleteUser = catchAsync(async(req ,res , next) => {
+
+});
 
 exports.getUser = catchAsync(async(req , res , next) =>{
     const id = req.params.userId;

@@ -101,7 +101,6 @@ exports.getTourGuides = catchAsync(async (req ,res ,next) => {
     });
 })
 
-// don't find any guide why?
 exports.getGuide = catchAsync(async (req, res, next) => {
     const guideId = req.params.id;
     // console.log(guideId._id.toString());
@@ -142,16 +141,18 @@ exports.guideTours = catchAsync(async (req , res , next) =>{
     const guideId = req.params.guideId;
     const tours = await Tour.find({user: guideId});
 
-    //TODO handle tours that user requested (user tours)
+    // handle tours that user requested (user tours)
+    const userTours = await GuideApplication.find({tour_guide: guideId});
 
-    if(!tours){
+    if(!tours && !userTours){
         return next(new AppError('there is no tour for this guide'));
     }
 
     res.status(200).json({
         status: 'success',
-        toursquantity: tours.length,
-        tours
+        toursquantity: tours.length + userTours.length,
+        tours,
+        userTours
     })
 });
 
@@ -160,8 +161,8 @@ exports.updateGuide = catchAsync(async (req , res ,next) =>{
 
 })
 
-//TODO guide don't deleted
-exports.deleteGuide = catchAsync(async (req , res , next) =>{
+
+exports.deleteGuideAccount = catchAsync(async (req , res , next) =>{
     const guide = req.user;
     //delete guide
     await Guide.findByIdAndDelete(guide);
@@ -177,7 +178,12 @@ exports.deleteGuide = catchAsync(async (req , res , next) =>{
     res.status(200).json({
         status:'Guide deleted successfully!'
     })
-})
+});
+
+//TODO: for admin only
+exports.deleteGuide = catchAsync(async(req ,res , next) => {
+
+});
 
 //TODO add notification here for client
 exports.acceptApplication = catchAsync(async (req , res ,next) =>{
@@ -191,6 +197,7 @@ exports.acceptApplication = catchAsync(async (req , res ,next) =>{
     
     //TODO: add notification for client
     //use application.user as the id of the user
+    //message: guide (applicaiton.guide) accepted you (application.tour.name) Tour application
     
     
     
@@ -204,4 +211,6 @@ exports.acceptApplication = catchAsync(async (req , res ,next) =>{
         pendingApplications: pendingApplications
     })
 
-})
+});
+
+

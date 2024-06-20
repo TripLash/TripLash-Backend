@@ -3,7 +3,8 @@ const Message = require('../Models/messageModel');
 const User = require('../Models/userModel');
 const catchAsync = require('../util/catchAsync');
 
-
+//TODO: send notification when getting new messages (i don't know where to put it so choose the suitable place)
+//message: you have new message from (sender)
 exports.createChatroom = catchAsync(async (req , res , next) =>{
     const { guideId } = req.body;
     
