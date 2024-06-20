@@ -192,9 +192,23 @@ exports.deleteTour = catchAsync(async (req , res , next) =>{
   })  
 })
 
-//TODO
 exports.updateTour = catchAsync(async (req , res , next) =>{
-  
+  const updates = req.body
+  const { tourId } = req.params;
+  const tour = await Tour.findById(tourId);
+
+  // Update each field in the tour object
+  Object.keys(updates).forEach(key => {
+    tour[key] = updates[key];
+  });
+
+  // Save the updated tour object
+  await tour.save();
+
+  res.status(200).json({
+    status:'tour updated!',
+    tour
+  })
 })
 
 exports.deleteAllTours = catchAsync(async (req , res , next) =>{

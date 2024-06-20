@@ -31,7 +31,7 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     }else if(tourID.tourCategory === 'private'){
       //TODO: add notification here for guide
       // use tourID.user as the id of guide
-      // message: (tourID.name) has been applied by (user) at (tourID.startDate)
+      // message: (tourID.title) has been applied by (user) at (tourID.startDate)
     }
     
     const newTourApp = await TourApplication.create(data);
@@ -120,7 +120,7 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
 
       if(tourCategory === 'private'){
       //TODO: add notificaition here for guide and client
-      //message for guide and client: (tour.name) application has been deleted
+      //message for guide and client: (tour.title) application has been cancelled!
       }
 
       res.status(200).json({
@@ -148,6 +148,7 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
       await GuideApplication.findByIdAndDelete(appId);
 
       //TODO: add notificaition here for guide and client
+      //message for guide and client: (tour.title) application has been cancelled!
 
 
       res.status(200).json({

@@ -211,14 +211,9 @@ exports.acceptApplication = catchAsync(async (req , res ,next) =>{
     
     //TODO: add notification for client
     //use application.user as the id of the user
-    //message: guide (applicaiton.guide) accepted you (application.tour.name) Tour application
+    //message: guide (applicaiton.guide) accepted you (application.tour.title) Tour application
     
     
-    
-    //add tour to guide's tours
-    // const guide = await Guide.findById(application.guide);
-    // guide.tours.push(application.tour);
-    // await guide.save();
 
     res.status(200).json({
         status:'success',
