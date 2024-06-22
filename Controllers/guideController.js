@@ -156,9 +156,53 @@ exports.guideTours = catchAsync(async (req , res , next) =>{
     })
 });
 
-//TODO
-exports.updateGuide = catchAsync(async (req , res ,next) =>{
 
+exports.updateGuide = catchAsync(async (req , res ,next) =>{
+    const user = req.user;
+    
+    if (!user) {
+        return res.status(401).json({ message: 'User not authenticated' });
+    }
+    
+    // console.log('Updating guide for user:', user._id); // Debug log
+
+    const updatedData = req.body;
+    
+    // Find the guide document
+    const guide = await Guide.findOne({ user: user._id });
+
+    if (!guide) {
+        console.log('Guide not found for user:', user._id); // Debug log
+        return res.status(404).json({ message: 'Guide not found' });
+    }
+
+    // Update specific fields
+    if (updatedData.languages) {
+        updatedData.languages.forEach(updatedLang => {
+            const lang = guide.languages.id(updatedLang._id);
+            if (lang) {
+                if (updatedLang.experience) {
+                    lang.experience = updatedLang.experience;
+                }
+                if (updatedLang.name) {
+                    lang.name = updatedLang.name;
+                }
+            }
+        });
+    }
+
+    // Update other fields directly
+    Object.keys(updatedData).forEach(key => {
+        if (key !== 'languages') {
+            guide[key] = updatedData[key];
+        }
+    });
+
+    // Save the updated guide document
+    const updatedGuide = await guide.save();
+
+    console.log('Updated guide:', updatedGuide); // Debug log
+    res.status(200).json(updatedGuide);
 })
 
 
