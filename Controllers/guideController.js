@@ -192,6 +192,7 @@ exports.deleteGuide = catchAsync(async(req ,res , next) => {
     await Tour.deleteMany({user: guide});
     //delete reviews
     await Review.deleteMany({guide: guide});
+    //TODO delete role from user 
     
     
     res.status(200).json({

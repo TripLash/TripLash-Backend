@@ -74,7 +74,8 @@ exports.deleteAccount = catchAsync(async(req , res , next) =>{
 
 exports.deleteUser = catchAsync(async(req ,res , next) => {
     const user = req.params.userId;
-    await User.findByIdAndDelete(req.user);
+    console.log(user);
+    await User.findByIdAndDelete(user);
     //delete applications of this user from guide and tour applications
     await GuideApp.findOneAndDelete({user: user});
     await TourApp.findOneAndDelete({user: user});
@@ -88,7 +89,8 @@ exports.deleteUser = catchAsync(async(req ,res , next) => {
 
 
     return res.status(200).json({
-        status:'user deleted successfully!'
+        status:'user deleted successfully!',
+        user
     })
 });
 

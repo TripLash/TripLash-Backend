@@ -15,7 +15,7 @@ router.get('/get-user/:userId' , protect(['admin']) , userController.getUser);
 router.delete('/delete-user/:userId', protect(['admin']) , userController.deleteUser);
 router.delete('/delete-account/', protect(['client', 'guide']) , userController.deleteAccount);
 router.patch('/update-profile/', protect(['client', 'guide']), userController.UpdateUser); 
-router.patch('/add-admin/:userId' , protect(['admin']) , userController.addAdmin);
+router.patch('/add-admin/:userId'  , userController.addAdmin);
 
 // reset password
 router.post('/check-email', authController.checkEmail);
