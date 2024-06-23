@@ -80,7 +80,7 @@ exports.getUserLists = catchAsync(async(req , res , next) =>{
 
 //get all users lists (for admin)
 exports.getAllLists = catchAsync(async(req , res , next) =>{
-    const lists = await Faviorate.find(req.query);
+    const lists = await Faviorate.find(req.query).populate('tours');
 
     res.status(200).json({
         status: 'success',

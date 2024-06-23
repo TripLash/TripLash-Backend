@@ -21,10 +21,10 @@ const guideSchema = new mongoose.Schema({
     included: [String],
     guideIn: [String],
     identity_photo: String,
-    // identity_check: {
-    //     type: Boolean,
-    //     required: true
-    // },
+    identity_check: {
+        type: Boolean,
+        required: true
+    },
     show_tours: Boolean,
     fav_activities: [String],
     rate: {
