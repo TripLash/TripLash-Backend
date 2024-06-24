@@ -20,10 +20,10 @@ const guideSchema = new mongoose.Schema({
     dayPrice: Number,
     included: [String],
     guideIn: [String],
-    identity_photo: String,
-    identity_check: {
-        type: Boolean,
-        required: true
+    identity_photo: String, 
+    identity_ID: {
+        type: Number,
+        required: [true, 'Guide must have an identity!']
     },
     show_tours: Boolean,
     fav_activities: [String],

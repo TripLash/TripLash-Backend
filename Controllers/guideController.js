@@ -1,6 +1,7 @@
 const Guide = require('../Models/guideModel');
 const User = require('../Models/userModel')
 const Tour = require('../Models/tourModel')
+const identity = require('../Models/IDModel');
 const catchAsync = require('../util/catchAsync');
 const Review = require('../Models/reviewModel');
 const GuideApplication = require('../Models/GuideAppModel');
@@ -8,11 +9,21 @@ const TourApplication = require('../Models/TourAppModel');
 const AppError = require('../util/appError');
 const ApiFeature = require('../util/apiFeatures');
 
+exports.addID = catchAsync(async (req , res , next) =>{
+    const {id , name} = req.body;
+    await identity.create({
+        id,
+        name
+    });
+
+    res.status(200).json({
+        message: 'ID created'
+    })
+})
 
 exports.createGuide = catchAsync(async (req, res, next) => {
     const {
         languages,
-        liveIn,
         aboutYou,
         hourPrice,
         halfDayPrice, // Fix variable name here
@@ -20,7 +31,7 @@ exports.createGuide = catchAsync(async (req, res, next) => {
         included,
         guideIn,
         identity_photo,
-        identity_check,
+        identity_ID,
         show_tours,
         fav_activities,
         city,
@@ -28,10 +39,12 @@ exports.createGuide = catchAsync(async (req, res, next) => {
     } = req.body;
 
     const user = req.user;
-
+    // console.log(identity_ID);
     // console.log(user);
 
     try {
+        const identity_check = await identity.findOne({id: identity_ID});
+        // console.log(identity_check);
         if (user && identity_check) {
             // Assuming addRole and save methods exist in the User model to handle role assignment
             await user.addRole('guide');
@@ -40,7 +53,6 @@ exports.createGuide = catchAsync(async (req, res, next) => {
             const newGuide = await Guide.create({
                 user,
                 languages,
-                // liveIn, // Uncomment if liveIn is supposed to be included
                 aboutYou,
                 hourPrice,
                 halfDayPrice, // Fix variable name here
@@ -48,7 +60,7 @@ exports.createGuide = catchAsync(async (req, res, next) => {
                 included,
                 guideIn,
                 identity_photo,
-                identity_check,
+                identity_ID,
                 show_tours,
                 fav_activities,
                 city,
