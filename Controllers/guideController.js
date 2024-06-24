@@ -40,7 +40,7 @@ exports.createGuide = catchAsync(async (req, res, next) => {
             const newGuide = await Guide.create({
                 user,
                 languages,
-                liveIn, // Uncomment if liveIn is supposed to be included
+                // liveIn, // Uncomment if liveIn is supposed to be included
                 aboutYou,
                 hourPrice,
                 halfDayPrice, // Fix variable name here
@@ -207,16 +207,23 @@ exports.updateGuide = catchAsync(async (req , res ,next) =>{
 
 
 exports.deleteGuideAccount = catchAsync(async (req , res , next) =>{
-    const guide = req.user;
+    const guideId = req.params.guideId;
+    const guide = Guide.findById(guideId);
+    const userId = guide.user;
+    const user = User.findById(userId);
     //delete guide
-    await Guide.findByIdAndDelete(guide);
+    await Guide.findByIdAndDelete(guideId);
     //delete applicaions
-    await GuideApplication.deleteMany({tour_guide: guide});
-    await TourApplication.deleteMany({'tour.user': guide});
+    await GuideApplication.deleteMany({tour_guide: guideId});
+    await TourApplication.deleteMany({'tour.user': guideId});
     //delete tours
-    await Tour.deleteMany({user: guide});
+    await Tour.deleteMany({user: guideId});
     //delete reviews
-    await Review.deleteMany({guide: guide});
+    await Review.deleteMany({guide: guideId});
+    //delete role from user 
+    await user.removeRole('admin');
+    await user.save();
+
     
     
     res.status(200).json({
@@ -226,21 +233,28 @@ exports.deleteGuideAccount = catchAsync(async (req , res , next) =>{
 
 //for admin only
 exports.deleteGuide = catchAsync(async(req ,res , next) => {
-    const guide = req.params.guideId;
+    const guideId = req.params.guideId;
+    const guide = Guide.findById(guideId);
+    const userId = guide.user;
+    const user = User.findById(userId);
     //delete guide
-    await Guide.findByIdAndDelete(guide);
+    await Guide.findByIdAndDelete(guideId);
     //delete applicaions
-    await GuideApplication.deleteMany({tour_guide: guide});
-    await TourApplication.deleteMany({'tour.user': guide});
+    await GuideApplication.deleteMany({tour_guide: guideId});
+    await TourApplication.deleteMany({'tour.user': guideId});
     //delete tours
-    await Tour.deleteMany({user: guide});
+    await Tour.deleteMany({user: guideId});
     //delete reviews
-    await Review.deleteMany({guide: guide});
-    //TODO delete role from user 
+    await Review.deleteMany({guide: guideId});
+    //delete role from user 
+    await user.removeRole('admin');
+    await user.save();
     
     
     res.status(200).json({
-        status:'Guide deleted successfully!'
+        status:'Guide deleted successfully!',
+        user,
+        guide
     })
 });
 
@@ -265,6 +279,69 @@ exports.acceptApplication = catchAsync(async (req , res ,next) =>{
         pendingApplications: pendingApplications
     })
 
+});
+
+//for admin only
+exports.addGuide = catchAsync(async (req , res ,next) =>{
+    const {
+        languages,
+        aboutYou,
+        hourPrice,
+        halfDayPrice, // Fix variable name here
+        dayPrice,
+        included,
+        guideIn,
+        identity_photo,
+        identity_check,
+        show_tours,
+        fav_activities,
+        city,
+        country
+    } = req.body;
+
+    const userId = req.params.userId;
+    const user = await User.findById(userId);
+    console.log(user);
+
+    try {
+        if (user && identity_check) {
+            // Assuming addRole and save methods exist in the User model to handle role assignment
+            await user.addRole('guide');
+            await user.save();
+
+            const newGuide = await Guide.create({
+                user,
+                languages,
+                aboutYou,
+                hourPrice,
+                halfDayPrice, // Fix variable name here
+                dayPrice,
+                included,
+                guideIn,
+                identity_photo,
+                identity_check,
+                show_tours,
+                fav_activities,
+                city,
+                country
+            });
+
+            res.status(201).json({
+                status: 'success',
+                data: {
+                    newGuide
+                }
+            });
+        } else {
+            res.status(400).json({
+                status: 'fail',
+                message: 'User identity not verified or user not provided'
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
 });
 
 

@@ -96,6 +96,11 @@ userSchema.methods.addRole = function (newRole) {
     }
 };
 
+// Remove role
+userSchema.methods.removeRole = function (role) {
+    this.user_types.splice(this.user_types.indexOf(role), 1);
+};
+
 userSchema.methods.checkPassword = async function (providedPassword) {
     try {
       if (!providedPassword) {

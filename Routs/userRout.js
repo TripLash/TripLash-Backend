@@ -13,9 +13,10 @@ router.get('/get-all-users' , protect(['admin']) , userController.getAllUsers);
 router.get('/get-user/:userId' , protect(['admin']) , userController.getUser);
 
 router.delete('/delete-user/:userId', protect(['admin']) , userController.deleteUser);
-router.delete('/delete-account/', protect(['client', 'guide']) , userController.deleteAccount);
+router.delete('/delete-account/', protect(['client']) , userController.deleteAccount);
 router.patch('/update-profile/', protect(['client', 'guide']), userController.UpdateUser); 
-router.patch('/add-admin/:userId'  , userController.addAdmin);
+router.patch('/add-admin/:userId' , protect(['admin']) , userController.addAdmin);
+router.patch('/remove-admin/:userId' , protect(['admin']) , userController.removeAdmin);
 
 // reset password
 router.post('/check-email', authController.checkEmail);

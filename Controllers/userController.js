@@ -23,6 +23,8 @@ exports.getProfile = catchAsync(async(req , res , next) =>{
     })
 });
 
+//TODO: add filter 
+//for admin only
 exports.getAllUsers = catchAsync(async(req , res , next) =>{
     const users = await User.find();
 
@@ -61,6 +63,8 @@ exports.deleteAccount = catchAsync(async(req , res , next) =>{
     await Tour.deleteMany({user: user});
     //if there is guide delete it 
     const guide  = await Guide.find({user: user});
+    //delete guide tours
+    await Tour.deleteMany({user: guide._id});
     if(guide){
         await Guide.findByIdAndDelete(guide._id);
     }
@@ -71,7 +75,7 @@ exports.deleteAccount = catchAsync(async(req , res , next) =>{
     })
 });
 
-
+//for admin only
 exports.deleteUser = catchAsync(async(req ,res , next) => {
     const user = req.params.userId;
     console.log(user);
@@ -94,6 +98,7 @@ exports.deleteUser = catchAsync(async(req ,res , next) => {
     })
 });
 
+//for admin only
 exports.getUser = catchAsync(async(req , res , next) =>{
     const id = req.params.userId;
     const user = await User.findById(id);
@@ -101,10 +106,20 @@ exports.getUser = catchAsync(async(req , res , next) =>{
     res.status(200).json({ user });
 });
 
+//for admin only
 exports.addAdmin = catchAsync(async(req , res , next) =>{
     const id = req.params.userId;
     const user = await User.findById(id);
     await user.addRole('admin');
+    await user.save();
+    res.status(200).json({ user });
+});
+
+//for admin only
+exports.removeAdmin = catchAsync(async(req , res , next) =>{
+    const id = req.params.userId;
+    const user = await User.findById(id);
+    await user.removeRole('admin');
     await user.save();
     res.status(200).json({ user });
 });
