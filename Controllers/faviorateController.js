@@ -6,14 +6,18 @@ const AppError = require('./../util/appError');
 
 //create new list 
 exports.createList = catchAsync(async(req , res , next) => {
-    const {name} = req.body;
+    const {name , tourId} = req.body;
     const user = req.user;
     // console.log(user._id)
     const newList = await Faviorate.create({
         name,
-        user: user._id,
-        // tours: newList.tours.push(tourId)
+        user: user._id
     })
+
+    if(tourId){
+    newList.tours.push(tourId);
+    await newList.save();
+    }
 
     res.status(200).json({
         status: 'success',
@@ -32,16 +36,17 @@ exports.UpdateList = catchAsync(async(req ,res , next) =>{
 
     if(tourId){ 
         list.tours.push(tourId); 
-        const tour = await Tour.findById(tourId);
-        tour.faviorate = true;
-        await tour.save();
+        // await list.save();
+        // const tour = await Tour.findById(tourId);
+        // tour.faviorate = true;
+        // await tour.save();
     }
     if(newName){ 
         list.name = newName;
-        await list.save();
+        // await list.save();
      }
 
-    list.save();
+    await list.save();
 
 
     res.status(200).json({

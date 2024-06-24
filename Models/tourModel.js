@@ -90,10 +90,10 @@ const tourSchema = new mongoose.Schema({
         default:"public"
     },
     creation_date: Date,
-    faviorate: {
-        type: Boolean,
-        default: false
-    },
+    // faviorate: {
+    //     type: Boolean,
+    //     default: false
+    // },
     participants: Number,
     members:{
         type: Number,

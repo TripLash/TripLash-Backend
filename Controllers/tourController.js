@@ -4,6 +4,7 @@ const AppError = require('../util/appError');
 const APIFeatures = require('../util/apiFeatures');
 const User = require('../Models/userModel');
 const Guide = require('../Models/guideModel');
+const FavoriteList = require('../Models/faviorateModel');
 const TourApplication = require('../Models/TourAppModel');
 const UserSearch = require('../Models/userSearchModel');
 
@@ -110,6 +111,26 @@ exports.getTours = catchAsync(async (req, res, next) => {
     // Calculate total number of pages
     const totalPages = Math.ceil(totalToursCount / limit);
 
+
+    // faviorate tours
+    const favoriteLists = await FavoriteList.find({ user: req.user._id });
+    const favoriteTourIds = favoriteLists.reduce((acc, list) => {
+      acc.push(...list.tours);
+      return acc;
+    }, []);
+    
+    const toursWithFavoriteInfo = tours.map(tour => {
+      let faviorate = false;
+      favoriteTourIds.forEach(Id =>{
+        if(tour._id.toString() === Id.toString()){
+          faviorate = true;
+        }
+      })
+
+      return { ...tour.toObject(), faviorate };
+    });
+
+
     // Return a response with the fetched tours and pagination metadata
     res.status(200).json({
       status: 'success',
@@ -119,7 +140,7 @@ exports.getTours = catchAsync(async (req, res, next) => {
         currentPage: page,
         limit
       },
-      data: tours
+      data: toursWithFavoriteInfo
     });
   } catch (error) {
     console.error('Error fetching tours:', error);
@@ -130,6 +151,8 @@ exports.getTours = catchAsync(async (req, res, next) => {
   
 exports.getTour = catchAsync(async (req, res, next) => {
   const { id } = req.params;
+  const user = req.user;
+  console.log(user);
 
   // Query the database to retrieve the tour with the specified ID
   const tour = await Tour.findById(id);
@@ -139,10 +162,25 @@ exports.getTour = catchAsync(async (req, res, next) => {
       return res.status(404).json({ status: 'error', message: 'Tour not found' });
   }
 
+  // faviorate tours
+  const favoriteLists = await FavoriteList.find({ user: req.user._id });
+  const favoriteTourIds = favoriteLists.reduce((acc, list) => {
+    acc.push(...list.tours);
+    return acc;
+  }, []);
+  
+    let faviorate = false;
+    favoriteTourIds.forEach(Id =>{
+      if(tour._id.toString() === Id.toString()){
+        faviorate = true;
+      }
+    })
+
   // Return a response with the fetched tour
   res.status(200).json({
       status: 'success',
-      data: tour
+      data: tour,
+      faviorate
   });
 });
 
