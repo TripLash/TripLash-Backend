@@ -20,9 +20,28 @@ const TourApplicationSchema = new mongoose.Schema({
     status: {
         type: String,
         enum:
-        ['finished' , 'active' , 'upcomming']
+        ['finished' , 'active' , 'upcomming'],
+        default: 'upcomming'
     },
+    creation_date: {
+        type: Date,
+        default: Date.now
+    }
 
+});
+
+TourApplicationSchema.pre('save', function(next) {
+    const now = new Date();
+    if (this.isNew) {
+        if (now > this.end_date) {
+            this.status = 'finished';
+        } else if (now >= this.start_date && now <= this.end_date) {
+            this.status = 'active';
+        } else if (now < this.start_date) {
+            this.status = 'upcoming';
+        }
+    }
+    next();
 });
 
 module.exports = mongoose.model('TourApplication', TourApplicationSchema);

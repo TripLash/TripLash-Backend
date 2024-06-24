@@ -22,6 +22,10 @@ const jwt = require('jsonwebtoken');
 const Chatroom = require('./Models/chatroomModel');
 const Message = require('./Models/messageModel');
 const User = require('./Models/userModel');
+const bodyParser = require('body-parser');
+const cron = require('node-cron');
+const {updateGuideApplicationStatuses} = require('./Controllers/applicationController')
+const {updateTourApplicationStatuses} = require('./Controllers/applicationController')
 
 app.use(cors())
 connect_db()
@@ -30,6 +34,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());
 
 
 app.use(globalErrorHandler);
@@ -46,6 +51,12 @@ app.get('/', (req , res) => {
     res.sendFile(path.join(__dirname , 'public' , 'index.html'))
 })
 
+// Schedule the job to run every hour
+cron.schedule('0 * * * *', () => {
+    console.log('Running the scheduled job to update application statuses...');
+    updateGuideApplicationStatuses();
+    updateTourApplicationStatuses();
+});
 
 io.on('connection', (socket) => {
     const token = socket.handshake.auth.token;

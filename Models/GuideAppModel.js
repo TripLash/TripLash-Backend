@@ -27,9 +27,28 @@ const GuideApplicationSchema = new mongoose.Schema({
     status: {
         type: String,
         enum:
-        ['finished' , 'active' , 'pendening' , 'upcoming']
+        ['finished' , 'active' , 'pendening' , 'upcoming'],
+        default: 'pendening'
     },
-    creation_date: Date
+    creation_date: {
+        type: Date,
+        default: Date.now
+    }
+});
+
+// Pre-save hook to set the initial status
+GuideApplicationSchema.pre('save', function(next) {
+    const now = new Date();
+    if (this.isNew) {
+        if (now > this.end_date) {
+            this.status = 'finished';
+        } else if (now >= this.start_date && now <= this.end_date) {
+            this.status = 'active';
+        } else if (now < this.start_date) {
+            this.status = 'upcoming';
+        }
+    }
+    next();
 });
 
 module.exports = mongoose.model('GuideApplication', GuideApplicationSchema);

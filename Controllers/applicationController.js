@@ -1,5 +1,3 @@
-
-const GuideAppModel = require('../Models/GuideAppModel');
 const GuideApplication = require('../Models/GuideAppModel');
 const TourApplication = require('../Models/TourAppModel');
 const Tour = require('../Models/tourModel');
@@ -7,7 +5,6 @@ const Guide = require('../Models/guideModel');
 const Faviorate = require('../Models/faviorateModel');
 const AppError = require('../util/appError');
 const catchAsync = require("../util/catchAsync");
-const TourAppModel = require('../Models/TourAppModel');
 const ApiFeatures = require('../util/apiFeatures');
 
 
@@ -226,3 +223,67 @@ exports.getAllGuidesApplications = catchAsync(async (req , res , next) =>{
     guidesApp
   })
 })
+
+exports.updateGuideApplicationStatuses = catchAsync(async () => {
+  try {
+      const now = new Date();
+
+      // Find all applications that need status updates
+      const applications = await GuideApplication.find({
+          $or: [
+              { status: { $ne: 'finished' }, end_date: { $lt: now } },
+              { status: { $ne: 'active' }, start_date: { $lte: now }, end_date: { $gte: now } },
+          ]
+      });
+
+      for (const app of applications) {
+          let newStatus = app.status;
+          if (now > app.end_date) {
+              newStatus = 'finished';
+          } else if (now >= app.start_date && now <= app.end_date) {
+              newStatus = 'active';
+          }
+          
+          if (newStatus !== app.status) {
+              app.status = newStatus;
+              await app.save();
+          }
+      }
+
+      console.log(`Updated statuses of ${applications.length} applications.`);
+  } catch (error) {
+      console.error('Error updating application statuses:', error);
+  }
+});
+
+exports.updateGuideApplicationStatuses = catchAsync(async () => {
+  try {
+      const now = new Date();
+
+      // Find all applications that need status updates
+      const applications = await TourApplication.find({
+          $or: [
+              { status: { $ne: 'finished' }, end_date: { $lt: now } },
+              { status: { $ne: 'active' }, start_date: { $lte: now }, end_date: { $gte: now } },
+          ]
+      });
+
+      for (const app of applications) {
+          let newStatus = app.status;
+          if (now > app.end_date) {
+              newStatus = 'finished';
+          } else if (now >= app.start_date && now <= app.end_date) {
+              newStatus = 'active';
+          }
+          
+          if (newStatus !== app.status) {
+              app.status = newStatus;
+              await app.save();
+          }
+      }
+
+      console.log(`Updated statuses of ${applications.length} applications.`);
+  } catch (error) {
+      console.error('Error updating application statuses:', error);
+  }
+});
