@@ -6,11 +6,14 @@ const Faviorate = require('../Models/faviorateModel');
 const AppError = require('../util/appError');
 const catchAsync = require("../util/catchAsync");
 const ApiFeatures = require('../util/apiFeatures');
+const {NOTIFICATION_TYPES} = require('../constants/notification-types');
+const {sendFCMNotification} = require('../util/generics');
+
 
 
 
 //create application for public and private tour 
-//TODO: notification on private tour for guide
+// notification on private tour for guide
 exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     const user = req.user;
     const data = req.body;
@@ -26,9 +29,11 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
         return next(new AppError('remaining places isn\'t enough!'));
     }
     }else if(tourID.tourCategory === 'private'){
-      //TODO: add notification here for guide
+      // add notification here for guide
       // use tourID.user as the id of guide
       // message: (tourID.title) has been applied by (user) at (tourID.startDate)
+      const username = `${user.firstname} ${user.lastname}`
+      await sendFCMNotification(tourID.user, 'New Application', `${tourID.title} has been applied by ${username} at ${tourID.startDate}`);
     }
     
     const newTourApp = await TourApplication.create(data);
@@ -40,7 +45,7 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
   });
 
 //create application for private guide
-//TODO notification for guide
+//notification for guide
   exports.createGuideApplication = catchAsync(async (req , res , next) =>{
     const data = req.body;
     const user = req.user;
@@ -90,10 +95,10 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
 
     const newGuideApp = (await GuideApplication.create(data)).populate('tour' , 'user' , 'tour_guide');
 
-    //TODO: add notifiaction for guide here
+    // add notifiaction for guide here
     //use data.guide as the id of the guide
     //message: you have a new tour request please check it out!
-
+    await sendFCMNotification(newGuideApp.tour_guide, 'New Application', 'you have a new tour request please check it out!', NOTIFICATION_TYPES.MENU);
     res.status(200).json({
         status: 'success',
         data: newGuideApp
@@ -118,6 +123,11 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
       if(tourCategory === 'private'){
       //TODO: add notificaition here for guide and client
       //message for guide and client: (tour.title) application has been cancelled!
+      // send notification to the client
+      // await sendFcmNotification(Guideapplication.user, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
+      // // send notification to the guide
+      // await sendFcmNotification(Guideapplication.tour_guide, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
+
       }
 
       res.status(200).json({
