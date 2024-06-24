@@ -111,24 +111,29 @@ exports.getTours = catchAsync(async (req, res, next) => {
     // Calculate total number of pages
     const totalPages = Math.ceil(totalToursCount / limit);
 
+    let showTours = tours;
 
+    const user = req.user;
     // faviorate tours
-    const favoriteLists = await FavoriteList.find({ user: req.user._id });
-    const favoriteTourIds = favoriteLists.reduce((acc, list) => {
-      acc.push(...list.tours);
-      return acc;
-    }, []);
-    
-    const toursWithFavoriteInfo = tours.map(tour => {
-      let faviorate = false;
-      favoriteTourIds.forEach(Id =>{
-        if(tour._id.toString() === Id.toString()){
-          faviorate = true;
-        }
-      })
+    if(user){
+        const favoriteLists = await FavoriteList.find({ user: req.user._id });
+        const favoriteTourIds = favoriteLists.reduce((acc, list) => {
+          acc.push(...list.tours);
+          return acc;
+        }, []);
+        
+        const toursWithFavoriteInfo = tours.map(tour => {
+          let faviorate = false;
+          favoriteTourIds.forEach(Id =>{
+            if(tour._id.toString() === Id.toString()){
+              faviorate = true;
+            }
+          })
 
-      return { ...tour.toObject(), faviorate };
-    });
+          return { ...tour.toObject(), faviorate };
+        });
+        showTours = toursWithFavoriteInfo;
+    }
 
 
     // Return a response with the fetched tours and pagination metadata
@@ -140,7 +145,7 @@ exports.getTours = catchAsync(async (req, res, next) => {
         currentPage: page,
         limit
       },
-      data: toursWithFavoriteInfo
+      data: showTours
     });
   } catch (error) {
     console.error('Error fetching tours:', error);
@@ -163,18 +168,20 @@ exports.getTour = catchAsync(async (req, res, next) => {
   }
 
   // faviorate tours
+  let faviorate = false;
+  if(user){
   const favoriteLists = await FavoriteList.find({ user: req.user._id });
   const favoriteTourIds = favoriteLists.reduce((acc, list) => {
     acc.push(...list.tours);
     return acc;
   }, []);
   
-    let faviorate = false;
     favoriteTourIds.forEach(Id =>{
       if(tour._id.toString() === Id.toString()){
         faviorate = true;
       }
     })
+  }
 
   // Return a response with the fetched tour
   res.status(200).json({
