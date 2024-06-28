@@ -8,6 +8,8 @@ const GuideApplication = require('../Models/GuideAppModel');
 const TourApplication = require('../Models/TourAppModel');
 const AppError = require('../util/appError');
 const ApiFeature = require('../util/apiFeatures');
+const {sendFCMNotification} = require('../util/generics');
+const {NOTIFICATION_TYPES} = require('../constants/notification-types');
 
 exports.addID = catchAsync(async (req , res , next) =>{
     const {id , name} = req.body;
@@ -270,7 +272,7 @@ exports.deleteGuide = catchAsync(async(req ,res , next) => {
     })
 });
 
-//TODO add notification here for client
+//add notification here for client
 exports.acceptApplication = catchAsync(async (req , res ,next) =>{
     //make application's status upcomming
     const appId = req.params
@@ -280,10 +282,11 @@ exports.acceptApplication = catchAsync(async (req , res ,next) =>{
 
     const pendingApplications = await GuideApplication.find({ status: 'pendening' });
     
-    //TODO: add notification for client
+    // add notification for client
     //use application.user as the id of the user
     //message: guide (applicaiton.guide) accepted you (application.tour.title) Tour application
-    
+    const guide_name = `${application.guide.firstname} ${application.guide.lastname}`
+    await sendFcmNotification(application.user, 'Application Accepted', `${guide_name} accepted you ${application.tour.title} Tour application`, NOTIFICATION_TYPES.MENU);
     
 
     res.status(200).json({

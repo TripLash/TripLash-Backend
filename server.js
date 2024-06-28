@@ -26,7 +26,8 @@ const bodyParser = require('body-parser');
 const cron = require('node-cron');
 const {updateGuideApplicationStatuses} = require('./Controllers/applicationController')
 const {updateTourApplicationStatuses} = require('./Controllers/applicationController')
-
+const {sendFCMNotification} = require('./util/generics');
+const {NOTIFICATION_TYPES} = require('./constants/notification-types');
 app.use(cors())
 connect_db()
 app.use(morgan("dev"));
@@ -59,10 +60,12 @@ cron.schedule('0 * * * *', () => {
 });
 
 io.on('connection', (socket) => {
+    const online_users = []
     const token = socket.handshake.auth.token;
     let user;
     try {
         user = jwt.verify(token, process.env.JWT_SECRET);
+        online_users.push(user._id);
     } catch (error) {
         console.error('Error verifying token:', error);
         socket.disconnect();
@@ -111,7 +114,14 @@ io.on('connection', (socket) => {
             senderImage: savedMessage.sender.photo,
             receiverImage: savedMessage.receiver.photo
         };
-        console.log(messageData)
+        console.log(messageData);
+        if (!online_users.includes(receiverId)) {
+            await sendFcmNotification({
+                receiverId,
+                title: 'New Message',
+                body: content
+            });
+        }
 
         socket.emit('receiveMessage', messageData);
         console.log('Message sent successfully');
