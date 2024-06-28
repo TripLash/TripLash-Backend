@@ -25,7 +25,7 @@ const TourApplicationSchema = new mongoose.Schema({
     },
     creation_date: {
         type: Date,
-        default: Date.now
+        default: Date.now()
     }
 
 });

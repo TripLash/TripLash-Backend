@@ -9,7 +9,6 @@ const reviewSchema = new mongoose.Schema({
     tour:{
         type: mongoose.Schema.ObjectId,
         ref: "Tour",
-        // required: [true , "Review must belong to a tour"]
     },
     guide:{
         type: mongoose.Schema.ObjectId,
@@ -26,7 +25,7 @@ const reviewSchema = new mongoose.Schema({
     },
     created_at: {
         type: Date,
-        default: Date.now
+        default: Date.now()
     },
     photos: [String],
     reviewType: {

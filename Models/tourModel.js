@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Review = require('./reviewModel');
 
 
-const dayDetailSchema = new mongoose.Schema({
+const placeDetailSchema = new mongoose.Schema({
     description: String,
         location: {
             lat: Number,
@@ -11,15 +11,7 @@ const dayDetailSchema = new mongoose.Schema({
 })
 const itinerarySchema = new mongoose.Schema({
     title: String,
-    objects: [dayDetailSchema]
-});
-
-const meetingPointSchema = new mongoose.Schema({
-    description: String,
-    location: {
-        lat: Number,
-        long: Number
-    }
+    objects: [placeDetailSchema]
 });
 
 
@@ -44,6 +36,7 @@ const tourSchema = new mongoose.Schema({
     },
     tourType: [{
         type: String,
+        //TODO 
         enum: ['Bus Tour' , "Day Trip" , 'Walking Tour' , 'Food & Drink' , 'Bike Tour' , 'cruises'],
         required: [true , 'specify tour type please!']
     }],
@@ -63,10 +56,11 @@ const tourSchema = new mongoose.Schema({
         objects: [itinerarySchema]
     }],
     meetingPoint:{
-        type: meetingPointSchema
+        type: placeDetailSchema
     },
     transportation:{
         type: String,
+        //TODO
         enum: ['Car' , 'Bus']
     },
     included:[String],
