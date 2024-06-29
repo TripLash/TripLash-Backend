@@ -18,7 +18,8 @@ exports.getProfile = catchAsync(async(req , res , next) =>{
             mobile: user.mobile,
             user_type: user.user_type,
             language: user.language,
-            currancy: user.currancy
+            currancy: user.currancy,
+            photo: user.photo
         }
     })
 });
