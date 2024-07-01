@@ -12,14 +12,7 @@ exports.getProfile = catchAsync(async(req , res , next) =>{
     res.status(200).json({
         status: 'success',
         data:{
-            firstname: user.firstname,
-            lastname: user.lastname,
-            email: user.email,
-            mobile: user.mobile,
-            user_type: user.user_type,
-            language: user.language,
-            currancy: user.currancy,
-            photo: user.photo
+            user
         }
     })
 });
