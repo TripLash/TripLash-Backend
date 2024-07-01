@@ -28,7 +28,7 @@ exports.createGuide = catchAsync(async (req, res, next) => {
         languages,
         aboutYou,
         hourPrice,
-        halfDayPrice, // Fix variable name here
+        halfDayPrice, 
         dayPrice,
         included,
         guideIn,
@@ -41,12 +41,9 @@ exports.createGuide = catchAsync(async (req, res, next) => {
     } = req.body;
 
     const user = req.user;
-    // console.log(identity_ID);
-    // console.log(user);
 
     try {
         const identity_check = await identity.findOne({id: identity_ID});
-        // console.log(identity_check);
         if (user && identity_check) {
             // Assuming addRole and save methods exist in the User model to handle role assignment
             await user.addRole('guide');
@@ -57,7 +54,7 @@ exports.createGuide = catchAsync(async (req, res, next) => {
                 languages,
                 aboutYou,
                 hourPrice,
-                halfDayPrice, // Fix variable name here
+                halfDayPrice,
                 dayPrice,
                 included,
                 guideIn,
@@ -237,8 +234,6 @@ exports.deleteGuideAccount = catchAsync(async (req , res , next) =>{
     //delete role from user 
     await user.removeRole('admin');
     await user.save();
-
-    
     
     res.status(200).json({
         status:'Guide deleted successfully!'

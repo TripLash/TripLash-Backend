@@ -8,7 +8,7 @@ router.post('/signup' , authController.signup);
 router.post('/login', authController.login);
 router.post('/logout', protect(['client', 'guide']) , authController.logout)
 
-router.get('/get-profile', protect(['client']), userController.getProfile);
+router.get('/get-profile', protect(['client' , 'guide' , 'admin']), userController.getProfile);
 router.get('/get-all-users' , protect(['admin']) , userController.getAllUsers);
 router.get('/get-user/:userId' , protect(['admin']) , userController.getUser);
 
