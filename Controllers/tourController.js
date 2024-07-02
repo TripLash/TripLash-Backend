@@ -8,7 +8,6 @@ const FavoriteList = require('../Models/faviorateModel');
 const TourApplication = require('../Models/TourAppModel');
 const UserSearch = require('../Models/userSearchModel');
 
- 
 /*
   - Search by place => done
   - filter by tour guide languages, category, budget => done
@@ -270,5 +269,36 @@ exports.getLastSearch = catchAsync(async (req , res , next) =>{
   res.status(200).json({
     status: 'success',
     lastSearch
+  })
+})
+
+exports.dashboard = catchAsync(async (req , res , next) =>{
+  const clients = await User.countDocuments({tourType: 'user'});
+  const admins = await User.countDocuments({tourType: 'admin'});
+  const guides = await User.countDocuments({tourType: 'guide'});
+  const tours = await Tour.countDocuments();
+  const private_tours = await Tour.countDocuments({tourCategory: 'private'});
+  const user_tours = await Tour.countDocuments({tourCategory: 'user'});
+  const public_tours = await Tour.countDocuments({tourCategory: 'public'});
+  const applications = await TourApplication.countDocuments();
+  const finishedApplications = await TourApplication.countDocuments({status: 'finished'});
+  const activeApplications = await TourApplication.countDocuments({status: 'active'});
+  const upcommingApplications = await TourApplication.countDocuments({status: 'upcomming'});
+  
+  res.status(200).json({
+    status: 'success',
+    data: {
+      clients,
+      admins,
+      guides,
+      tours,
+      private_tours,
+      user_tours,
+      public_tours,
+      applications,
+      finishedApplications,
+      activeApplications,
+      upcommingApplications
+    }
   })
 })
