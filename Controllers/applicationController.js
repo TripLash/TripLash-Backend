@@ -81,11 +81,12 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     }
     list[0].tours.push(data.tour);
     list[0].save();
-    console.log(list);
     data.creation_date = Date.now();
 
-    const newGuideApp = (await GuideApplication.create(data)).populate('tour' , 'user' , 'tour_guide');
+    const newGuideApp = await GuideApplication.create(data)
+    // newGuideApp.populate('tour' , 'user' , 'tour_guide');
 
+    console.log(newGuideApp);
     await sendFCMNotification(newGuideApp.tour_guide, 'New Application', 'you have a new tour request please check it out!', NOTIFICATION_TYPES.MENU);
     res.status(200).json({
         status: 'success',
