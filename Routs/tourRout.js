@@ -15,8 +15,7 @@ router.delete('/delete-tour/:id', protect(['guide' , 'client', 'admin']), tourCo
 router.patch('/update-tour/:tourId' , tourController.updateTour); // not finished yet
 router.delete('/delete-all-tours' , protect(['admin']) , tourController.deleteAllTours);
 router.get('/get-last-search/', protect(['client', 'guide', 'admin']) , tourController.getLastSearch);
-router.get('/dashboard/', protect(['admin']) , tourController.getDashboard);
-// router.get('/dashboard', tourController.dashboard);
+router.get('/dashboard/', protect(['admin']) , tourController.dashboard);
 
 
 
