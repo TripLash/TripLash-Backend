@@ -94,7 +94,7 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
   });
   
 //cancel application
-//TODO notification for guide and client
+//notification for guide and client
   exports.cancelApplication = catchAsync(async (req , res , next) =>{
     const appId = req.params.appId;
     const Tourapplication = await TourApplication.findById(appId);
@@ -106,16 +106,17 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
       tour.members = tour.members - Tourapplication.members;
       tour.save();
       const tourCategory = tour.tourCategory;
-      await TourApplication.findByIdAndDelete(appId);
+      
 
       if(tourCategory === 'private'){
-      //TODO: add notificaition here for guide and client
+      //add notificaition here for guide and client
       //message for guide and client: (tour.title) application has been cancelled!
       // send notification to the client
-      // await sendFcmNotification(Guideapplication.user, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
+      await sendFcmNotification(TourApplication.user, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
       // // send notification to the guide
-      // await sendFcmNotification(Guideapplication.tour_guide, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
+      await sendFcmNotification(TourApplication.tour.user, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
 
+      await TourApplication.findByIdAndDelete(appId);
       }
 
       res.status(200).json({
@@ -142,9 +143,12 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
       console.log(list);
       await GuideApplication.findByIdAndDelete(appId);
 
-      //TODO: add notificaition here for guide and client
+      //add notificaition here for guide and client
       //message for guide and client: (tour.title) application has been cancelled!
 
+      await sendFcmNotification(GuideApplication.user, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
+      // // send notification to the guide
+      await sendFcmNotification(GuideApplication.tour_guide, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
 
       res.status(200).json({
         status: "application has been canceled successfully!",

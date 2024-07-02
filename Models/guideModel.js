@@ -20,7 +20,8 @@ const guideSchema = new mongoose.Schema({
     dayPrice: Number,
     included: [String],
     guideIn: [String],
-    identity_photo: String, 
+    identity_photo_front: String, 
+    identity_photo_back: String, 
     identity_ID: {
         type: Number,
         required: [true, 'Guide must have an identity!']
@@ -37,8 +38,6 @@ const guideSchema = new mongoose.Schema({
     },
     city: String,
     country: String
-    //calender????
-
 })
 
 const Guide = mongoose.model('Guide' , guideSchema);

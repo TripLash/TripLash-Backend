@@ -17,7 +17,7 @@ exports.getProfile = catchAsync(async(req , res , next) =>{
     })
 });
 
-//TODO: add filter 
+
 //for admin only
 exports.getAllUsers = catchAsync(async(req , res , next) =>{
     const users = await User.find();
