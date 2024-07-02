@@ -198,18 +198,25 @@ exports.createTour = catchAsync(async (req, res, next) => {
   if (!user) {
       return res.status(400).json({ status: 'error', message: 'User not found' });
   }
+  const guide = await Guide.find({ user: user._id});
+  // console.log(guide[0]._id);
 
   // Create a new tour instance using the request body
   const newTourData = req.body;
-  newTourData.user = user._id; // Associate the user with the tour
+  if(newTourData.tourCategory === 'user'){
+    newTourData.user = user._id;
+  }else{
+    if(!guide){
+      return res.status(400).json({ status: 'error', message: 'User is not a tour guide' });
+    }
+    newTourData.user = guide[0]._id;
+  }
+  console.log(newTourData.user);
   newTourData.creationDate = Date.now();
-  if(newTourData.tourType === 'user') {
-    newTourData.faviorate = true;
-  };
   if (req.files && req.files.length > 0) {
     newTourData.photos = req.files.map(file => file.path);
   }
-  console.log(req);
+  // console.log(req);
   const newTour = new Tour(newTourData);
 
   // Save the new tour to the database
