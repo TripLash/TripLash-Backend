@@ -34,9 +34,12 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     
     const newTourApp = await TourApplication.create(data);
 
+    const showData = await Tourapplication.find(newTourApp).populate('tour user tour_guide');
+
+
     res.status(201).json({
       status: "success",
-      data: newTourApp
+      data: showData[0]
     });
   });
 
@@ -85,12 +88,13 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
 
     const newGuideApp = await GuideApplication.create(data)
     // newGuideApp.populate('tour' , 'user' , 'tour_guide');
+    const showData = await GuideApplication.find(newGuideApp).populate('tour user tour_guide');
 
     console.log(newGuideApp);
     await sendFCMNotification(newGuideApp.tour_guide, 'New Application', 'you have a new tour request please check it out!', NOTIFICATION_TYPES.MENU);
     res.status(200).json({
         status: 'success',
-        data: newGuideApp
+        data: showData[0]
     })
   });
   
