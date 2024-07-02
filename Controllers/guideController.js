@@ -100,7 +100,7 @@ exports.getTourGuides = catchAsync(async (req ,res ,next) => {
     query.hourPrice = { $lte: parseFloat(hourPrice) };
     }
     
-    const guides = await Guide.find(query).populate('user', 'firstname lastname country city birth_date').populate({
+    const guides = await Guide.find(query).populate('user', 'firstname lastname country city birth_date photo').populate({
         path: 'languages',
         select: 'name experience'
     });
@@ -118,7 +118,7 @@ exports.getGuide = catchAsync(async (req, res, next) => {
 
     try {
         const guide = await Guide.findById(guideId)
-            .populate('user', 'firstname lastname country city birth_date')
+            .populate('user', 'firstname lastname country city birth_date photo')
             .populate({
                 path: 'languages',
                 select: 'name experience'
