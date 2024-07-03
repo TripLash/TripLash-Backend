@@ -46,7 +46,7 @@ exports.getTours = catchAsync(async (req, res, next) => {
     if (maxPrice) {
       searchFilter = {
         ...searchFilter,
-        price: { $lte: parseFloat(maxPrice) }
+        adult_price: { $lte: parseFloat(maxPrice) }
       };
     }
 
@@ -63,7 +63,9 @@ exports.getTours = catchAsync(async (req, res, next) => {
     console.log('Search Filter:', searchFilter);
 
     // Build the query with optional population of related fields
-    let query = Tour.find(searchFilter).populate('itinerary').populate('meetingPoint');
+    let query = Tour.find(searchFilter).populate({
+      path: 'itinerary.objects'
+  }).populate('meetingPoint');
     // Filter by guide languages
     if (languages) {
       const languagesArray = Array.isArray(languages) ? languages : [languages];
@@ -133,6 +135,7 @@ exports.getTours = catchAsync(async (req, res, next) => {
         });
         showTours = toursWithFavoriteInfo;
     }
+    console.log(showTours);
 
 
     // Return a response with the fetched tours and pagination metadata

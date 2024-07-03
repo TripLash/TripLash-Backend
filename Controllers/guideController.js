@@ -281,7 +281,7 @@ exports.acceptApplication = catchAsync(async (req , res ,next) =>{
     //use application.user as the id of the user
     //message: guide (applicaiton.guide) accepted you (application.tour.title) Tour application
     const guide_name = `${application.guide.firstname} ${application.guide.lastname}`
-    await sendFcmNotification(application.user, 'Application Accepted', `${guide_name} accepted you ${application.tour.title} Tour application`, NOTIFICATION_TYPES.MENU);
+    await sendFCMNotification(application.user, 'Application Accepted', `${guide_name} accepted you ${application.tour.title} Tour application`, NOTIFICATION_TYPES.MENU);
     
 
     res.status(200).json({

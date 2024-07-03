@@ -51,10 +51,7 @@ const tourSchema = new mongoose.Schema({
         type: Number,
         default: 0,
       },
-    itinerary:[{
-        title: String,
-        objects: [itinerarySchema]
-    }],
+    itinerary:[itinerarySchema],
     meetingPoint:{
         type: placeDetailSchema
     },

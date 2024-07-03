@@ -34,7 +34,7 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
     
     const newTourApp = await TourApplication.create(data);
 
-    const showData = await Tourapplication.find(newTourApp).populate('tour user tour_guide');
+    const showData = await TourApplication.find(newTourApp).populate('tour user');
 
 
     res.status(201).json({
@@ -171,9 +171,10 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
 //get one application
 exports.getApplication = catchAsync(async (req , res , next) =>{
   const appId = req.params.appId;
-  var app = await TourApplication.findById(appId);
+  var app = await TourApplication.findById(appId).populate('tour user');
   if(!app){
-    app = await GuideApplication.findById(appId);
+    app = await GuideApplication.findById(appId).populate('tour user tour_guide');
+    ;
   }
   res.status(200).json({
     status:'success',
@@ -183,17 +184,19 @@ exports.getApplication = catchAsync(async (req , res , next) =>{
 
 //get user applications (tours , guides)
 exports.getUserApplications = catchAsync(async (req , res , next) =>{
+  const status = req.query.status;
   const userId = req.user._id;
-
-  const filterdT = new ApiFeatures(TourApplication.find({user: userId}) , req.query).Filter();
-  const filterdG = new ApiFeatures(GuideApplication.find({user: userId}) , req.query).Filter();
-
-  const tours = await filterdT.query.populate('tour');
-  const guides = await filterdG.query.populate('tour');
+  let query = {user: userId};
+  query.user = userId;
+  if(status){
+    query.status = status;
+  }
+  const toursApp = await TourApplication.find(query).populate('tour user');
+  const guidesApp = await GuideApplication.find(query).populate('tour user tour_guide');
 
   let app = [];
-  app.push.apply(app , tours);
-  app.push.apply(app , guides);
+  app.push.apply(app , toursApp);
+  app.push.apply(app , guidesApp);
 
   res.status(200).json({
     status:'success',
@@ -205,7 +208,7 @@ exports.getUserApplications = catchAsync(async (req , res , next) =>{
 exports.getGuideApplications = catchAsync(async (req , res , next) =>{
   const userId = req.user._id;
   const guide = await Guide.find({user: userId});
-  const guideApps = await GuideApplication.find({tour_guide: guide}).sort({ 'creation_date': 'desc' });
+  const guideApps = await GuideApplication.find({tour_guide: guide}).sort({ 'creation_date': 'desc' }).populate('tour user tour_guide');
 
   res.status(200).json({
     status:'success',
@@ -214,7 +217,7 @@ exports.getGuideApplications = catchAsync(async (req , res , next) =>{
 });
 
 exports.getAllToursApplications = catchAsync(async (req , res , next) =>{
-  const toursApp = await TourApplication.find();
+  const toursApp = await TourApplication.find().populate('tour user' );
 
   res.status(200).json({
     status:'success',
@@ -223,7 +226,7 @@ exports.getAllToursApplications = catchAsync(async (req , res , next) =>{
 })
 
 exports.getAllGuidesApplications = catchAsync(async (req , res , next) =>{
-  const guidesApp = await GuideApplication.find();
+  const guidesApp = await GuideApplication.find().populate('tour user tour_guide');
   
   res.status(200).json({
     status:'success',
