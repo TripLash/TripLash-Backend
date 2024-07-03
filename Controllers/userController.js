@@ -37,8 +37,12 @@ exports.UpdateUser = catchAsync(async(req , res , next) =>{
     const updates = req.body;
     // Update each field in the user object
     Object.keys(updates).forEach(key => {
+        
         user[key] = updates[key];
     });
+    if (req.file) {
+        user.photo = req.file.path;
+    }
 
     // Save the updated user object
     await user.save();
