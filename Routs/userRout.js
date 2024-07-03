@@ -12,7 +12,7 @@ router.post('/logout', protect(['client', 'guide']) , authController.logout)
 
 router.get('/get-profile', protect(['client' , 'guide' , 'admin']), userController.getProfile);
 router.get('/get-all-users' , protect(['admin']) , userController.getAllUsers);
-router.get('/get-user/:userId' , protect(['admin']) , userController.getUser);
+router.get('/get-user/:userId' , protect(['client' , 'guide' , 'admin']) , userController.getUser);
 
 router.delete('/delete-user/:userId', protect(['admin']) , userController.deleteUser);
 router.delete('/delete-account/', protect(['client']) , userController.deleteAccount);
