@@ -65,7 +65,7 @@ exports.getTours = catchAsync(async (req, res, next) => {
     // Build the query with optional population of related fields
     let query = Tour.find(searchFilter).populate({
       path: 'itinerary.objects'
-  }).populate('meetingPoint');
+  }).populate('meetingPoint user');
     // Filter by guide languages
     if (languages) {
       const languagesArray = Array.isArray(languages) ? languages : [languages];
