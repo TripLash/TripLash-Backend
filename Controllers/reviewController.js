@@ -17,9 +17,12 @@ exports.createReview = catchAsync(async (req, res, next) => {
         guide,
         rating,
         user,
-        photos,
         reviewType
     })
+    if (req.files && req.files.length > 0) {
+        newReview.photos = req.files.map(file => file.path);
+        await newReview.save();
+    }
     const tourObj = await Tour.findById(tour);
     const guideObj = await Guide.findById(guide);
     if(reviewType == 'tour review'){

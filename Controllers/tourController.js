@@ -255,6 +255,9 @@ exports.updateTour = catchAsync(async (req , res , next) =>{
   Object.keys(updates).forEach(key => {
     tour[key] = updates[key];
   });
+  if (req.files && req.files.length > 0) {
+    tour.photos = req.files.map(file => file.path);
+  }
 
   // Save the updated tour object
   await tour.save();
