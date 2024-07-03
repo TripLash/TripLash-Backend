@@ -66,6 +66,7 @@ exports.getTours = catchAsync(async (req, res, next) => {
     let query = Tour.find(searchFilter).populate({
       path: 'itinerary.objects'
   }).populate('meetingPoint user');
+  console.log(query);
     // Filter by guide languages
     if (languages) {
       const languagesArray = Array.isArray(languages) ? languages : [languages];
@@ -162,7 +163,7 @@ exports.getTour = catchAsync(async (req, res, next) => {
   console.log(user);
 
   // Query the database to retrieve the tour with the specified ID
-  const tour = await Tour.findById(id);
+  const tour = await Tour.findById(id).populate('user');
 
   // Check if the tour exists
   if (!tour) {
