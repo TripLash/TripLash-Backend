@@ -35,11 +35,7 @@ exports.UpdateList = catchAsync(async(req ,res , next) =>{
     }
 
     if(tourId){ 
-        list.tours.push(tourId); 
-        // await list.save();
-        // const tour = await Tour.findById(tourId);
-        // tour.faviorate = true;
-        // await tour.save();
+        list.tours.push(tourId);
     }
     if(newName){ 
         list.name = newName;
