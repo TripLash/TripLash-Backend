@@ -9,7 +9,7 @@ router.post('/create-guide-application', protect(['client']) , ApplicationContro
 router.delete('/cancel-application/:appId' , ApplicationController.cancelApplication);
 router.get('/get-application/:appId' , protect(['client' , 'guide' , 'admin']) , ApplicationController.getApplication);
 router.get('/get-user-application' , protect(['client']) , ApplicationController.getUserApplications);
-router.get('/get-guide-application' , protect(['guide']) , ApplicationController.getGuideApplications);
+router.get('/get-guide-application' , protect(['guide', 'admin']) , ApplicationController.getGuideApplications);
 router.get('/get-all-tours-applications' , protect(['admin']) , ApplicationController.getAllToursApplications);
 router.get('/get-all-guides-applications' , protect(['admin']) , ApplicationController.getAllGuidesApplications);
 
