@@ -10,5 +10,6 @@ router.get("/get-list/:listId", faviorateController.getList);
 router.get("/get-all-lists" , protect(['admin']), faviorateController.getAllLists);
 router.get("/get-user-lists" , protect(['client']) , faviorateController.getUserLists);
 router.delete("/delete-list-tour/:listId" , faviorateController.deleteTourList);
+router.patch('/add-fav-guide/guide' , protect(['user']) , faviorateController.addFaviorateGuide);
 
 module.exports = router;

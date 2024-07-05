@@ -173,8 +173,11 @@ exports.getApplication = catchAsync(async (req , res , next) =>{
   const appId = req.params.appId;
   var app = await TourApplication.findById(appId).populate('tour user');
   if(!app){
-    app = await GuideApplication.findById(appId).populate('tour user tour_guide');
-    ;
+    app = await GuideApplication.findById(appId).populate('tour user tour_guide')
+    .populate({
+      path: 'tour_guide',
+      populate: 'user'
+    });
   }
   res.status(200).json({
     status:'success',
@@ -226,7 +229,11 @@ exports.getAllToursApplications = catchAsync(async (req , res , next) =>{
 })
 
 exports.getAllGuidesApplications = catchAsync(async (req , res , next) =>{
-  const guidesApp = await GuideApplication.find().populate('tour user tour_guide');
+  const guidesApp = await GuideApplication.find().populate('tour user')
+  .populate({
+    path: 'tour_guide',
+    populate: 'user'
+  });
   
   res.status(200).json({
     status:'success',

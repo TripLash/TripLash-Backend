@@ -9,7 +9,7 @@ router.get('/get-all-guides', guideController.getTourGuides);
 router.get('/guide/:id', protect(['client', 'guide', 'admin']) , guideController.getGuide);
 router.get('/guide-tours/:guideId' , guideController.guideTours);
 router.get('/accept-application/appId' , guideController.acceptApplication) 
-router.patch('/update-guide',protect(['guide']) , guideController.updateGuide) // not finished yet
+router.patch('/update-guide',protect(['guide']) , guideController.updateGuide) 
 router.delete('/delete-guide-account' , protect(['guide']) , guideController.deleteGuideAccount);
 router.delete('/delete-guide/:guideId' , protect(['admin']) , guideController.deleteGuide);
 router.post('/add-ID' , guideController.addID);

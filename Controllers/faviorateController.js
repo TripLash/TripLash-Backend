@@ -25,7 +25,7 @@ exports.createList = catchAsync(async(req , res , next) => {
     })
 })
 
-//add tour or rename list
+//add tour or guide or rename list
 exports.UpdateList = catchAsync(async(req ,res , next) =>{
     const {tourId , newName} = req.body;
     const list = await Faviorate.findById(req.params.listId);
@@ -39,8 +39,7 @@ exports.UpdateList = catchAsync(async(req ,res , next) =>{
     }
     if(newName){ 
         list.name = newName;
-        // await list.save();
-     }
+    }
 
     await list.save();
 
@@ -118,5 +117,26 @@ exports.deleteTourList = catchAsync(async(req , res , next) =>{
     res.status(200).json({
         status: 'list deleted successfully!',
         list
+    })
+})
+
+//add guide to faviorates
+exports.addFaviorateGuide = catchAsync(async (req , res , next) => {
+    const user = req.user;
+    const guide = req.params;
+
+    if (!user) {
+        return res.status(401).json({ message: 'User not found' });
+    }
+    
+    const favGuidesList = await Faviorate.find({user:user , name:'Favourite Guides'});
+    console.log(favGuidesList);
+    
+    favGuidesList.tours.push(guide);
+    await list.save();
+
+    res.status(200).json({
+        status:'success',
+        favGuidesList
     })
 })

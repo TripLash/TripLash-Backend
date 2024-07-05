@@ -1,6 +1,6 @@
 const Guide = require('../Models/guideModel');
 const User = require('../Models/userModel')
-const Tour = require('../Models/tourModel')
+const Tour = require('../Models/tourModel');
 const identity = require('../Models/IDModel');
 const catchAsync = require('../util/catchAsync');
 const Review = require('../Models/reviewModel');

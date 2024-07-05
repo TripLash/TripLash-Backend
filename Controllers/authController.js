@@ -79,6 +79,11 @@ exports.signup = catchAsync(async (req, res, next) => {
         user: newUser._id,
     })
 
+    await Faviorate.create({
+        name: 'Favourite Guides',
+        user: newUser._id,
+    })
+
     createSendToken(newUser, 201, req, res)
 });
 
