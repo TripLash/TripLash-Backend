@@ -186,6 +186,7 @@ exports.getApplication = catchAsync(async (req , res , next) =>{
 });
 
 //get user applications (tours , guides)
+//TODO populate user tour
 exports.getUserApplications = catchAsync(async (req , res , next) =>{
   const status = req.query.status;
   const userId = req.user._id;
@@ -194,8 +195,16 @@ exports.getUserApplications = catchAsync(async (req , res , next) =>{
   if(status){
     query.status = status;
   }
-  const toursApp = await TourApplication.find(query).populate('tour user');
-  const guidesApp = await GuideApplication.find(query).populate('tour user tour_guide');
+  const toursApp = await TourApplication.find(query).populate('user')
+  .populate({
+    path: 'tour',
+    populate: 'user'
+  });
+  const guidesApp = await GuideApplication.find(query).populate('user tour_guide')
+  .populate({
+    path: 'tour',
+    populate: 'user'
+  });
 
   let app = [];
   app.push.apply(app , toursApp);
@@ -208,10 +217,15 @@ exports.getUserApplications = catchAsync(async (req , res , next) =>{
 });
 
 //get guide requests
+//TODO populate user tour
 exports.getGuideApplications = catchAsync(async (req , res , next) =>{
   const userId = req.user._id;
   const guide = await Guide.find({user: userId});
-  const guideApps = await GuideApplication.find({tour_guide: guide}).sort({ 'creation_date': 'desc' }).populate('tour user tour_guide');
+  const guideApps = await GuideApplication.find({tour_guide: guide}).sort({ 'creation_date': 'desc' }).populate('user tour_guide')
+  .populate({
+    path: 'tour',
+    populate: 'user'
+  });
 
   res.status(200).json({
     status:'success',

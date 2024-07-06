@@ -147,7 +147,7 @@ exports.getGuide = catchAsync(async (req, res, next) => {
         res.status(500).json({ status: 'error', message: 'Server Error' });
     }
 });
-
+//TODO use token
 exports.guideTours = catchAsync(async (req , res , next) =>{
     const guideId = req.params.guideId;
     const tours = await Tour.find({user: guideId});
