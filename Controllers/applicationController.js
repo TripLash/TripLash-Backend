@@ -117,16 +117,16 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
       //add notificaition here for guide and client
       //message for guide and client: (tour.title) application has been cancelled!
       // send notification to the client
-      await sendFcmNotification(TourApplication.user, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
+      await sendFCMNotification(Tourapplication.user, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
       // // send notification to the guide
-      await sendFcmNotification(TourApplication.tour.user, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
+      await sendFCMNotification(Tourapplication.tour.user, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
 
       await TourApplication.findByIdAndDelete(appId);
       }
 
       res.status(200).json({
         status: "application has been canceled successfully!",
-        "data": TourApplication
+        data: TourApplication
       })
 
       }else{
@@ -151,13 +151,13 @@ exports.createTourAppliaction = catchAsync(async (req, res, next) => {
       //add notificaition here for guide and client
       //message for guide and client: (tour.title) application has been cancelled!
 
-      await sendFcmNotification(GuideApplication.user, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
+      await sendFCMNotification(Guideapplication.user, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
       // // send notification to the guide
-      await sendFcmNotification(GuideApplication.tour_guide, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
+      await sendFCMNotification(Guideapplication.tour_guide, 'Application Canceled', `${tour.title} application has been cancelled!`, NOTIFICATION_TYPES.MENU); 
 
       res.status(200).json({
         status: "application has been canceled successfully!",
-        "data": Guideapplication
+        data: Guideapplication
       })
 
       }else{
