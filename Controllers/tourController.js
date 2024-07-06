@@ -12,6 +12,7 @@ const UserSearch = require('../Models/userSearchModel');
   - Search by place => done
   - filter by tour guide languages, category, budget => done
 */
+//TODO: faviorate tours
 exports.getTours = catchAsync(async (req, res, next) => {
   try {
     // Pagination options

@@ -85,6 +85,7 @@ exports.createGuide = catchAsync(async (req, res, next) => {
 });
 
 // Get all tour guides so the client can reserve  a guide for a specific trip
+//TODO: faviorate guides
 exports.getTourGuides = catchAsync(async (req ,res ,next) => {
     const languages = req.query.languages; // Expecting a comma-separated list of languages
     const hourPrice = req.query.hourPrice; // Expecting a number
@@ -147,7 +148,8 @@ exports.getGuide = catchAsync(async (req, res, next) => {
         res.status(500).json({ status: 'error', message: 'Server Error' });
     }
 });
-//TODO use token
+
+
 exports.guideTours = catchAsync(async (req , res , next) =>{
     // const guideId = req.params.guideId;
     const user = req.user;
@@ -156,6 +158,25 @@ exports.guideTours = catchAsync(async (req , res , next) =>{
 
     // handle tours that user requested (user tours)
     const userTours = await GuideApplication.find({tour_guide: guide._id});
+
+    if(!tours && !userTours){
+        return next(new AppError('there is no tour for this guide'));
+    }
+
+    res.status(200).json({
+        status: 'success',
+        toursquantity: tours.length + userTours.length,
+        tours,
+        userTours
+    })
+});
+
+exports.guideToursAdmin = catchAsync(async (req , res , next) =>{
+    const guideId = req.params.guideId;
+    const tours = await Tour.find({user: guideId});
+
+    // handle tours that user requested (user tours)
+    const userTours = await GuideApplication.find({tour_guide: guideId});
 
     if(!tours && !userTours){
         return next(new AppError('there is no tour for this guide'));
