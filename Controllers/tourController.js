@@ -25,79 +25,84 @@ exports.getTours = catchAsync(async (req, res, next) => {
 
     // Search options
     const { place, maxPrice, tourTypes, languages } = req.query;
-    let searchFilter = {};
+    let searchFilter = {
+        tourCategory: { $nin: ['user'] } // Filter out 'user' tour category
+    };
 
     // Place filter
     if (place) {
-      const placeRegex = new RegExp(place, 'i'); // 'i' for case-insensitive
-      searchFilter = {
-        ...searchFilter,
-        $or: [
-          { title: { $regex: placeRegex } },
-          { description: { $regex: placeRegex } }
-        ]
-      };
-      if (req.user) {
-        await UserSearch.create({ user: req.user._id, search: place });
-      }
+        const placeRegex = new RegExp(place, 'i'); // 'i' for case-insensitive
+        searchFilter = {
+            ...searchFilter,
+            $or: [
+                { title: { $regex: placeRegex } },
+                { description: { $regex: placeRegex } }
+            ]
+        };
+        if (req.user) {
+            await UserSearch.create({ user: req.user._id, search: place });
+        }
     }
 
     // Price filter
     if (maxPrice) {
-      searchFilter = {
-        ...searchFilter,
-        adult_price: { $lte: parseFloat(maxPrice) }
-      };
+        searchFilter = {
+            ...searchFilter,
+            adult_price: { $lte: parseFloat(maxPrice) }
+        };
     }
 
     // Tour types filter
     if (tourTypes) {
-      const typesArray = Array.isArray(tourTypes) ? tourTypes : [tourTypes];
-      searchFilter = {
-        ...searchFilter,
-        tourType: { $in: typesArray }
-      };
+        const typesArray = Array.isArray(tourTypes) ? tourTypes : [tourTypes];
+        searchFilter = {
+            ...searchFilter,
+            tourType: { $in: typesArray }
+        };
     }
 
     // Debug: Log the search filter
     console.log('Search Filter:', searchFilter);
 
     // Build the query with optional population of related fields
-    let query = Tour.find(searchFilter).populate({
-      path: 'itinerary.objects'
-  }).populate('meetingPoint user');
-  console.log(query);
+    let query = Tour.find(searchFilter)
+        .populate({
+            path: 'itinerary.objects'
+        })
+        .populate('meetingPoint user');
+    console.log(query);
+
     // Filter by guide languages
     if (languages) {
-      const languagesArray = Array.isArray(languages) ? languages : [languages];
-      // Use aggregate to join with Guide and User collections
-      query = Tour.aggregate([
-        {
-          $lookup: {
-            from: 'guides',
-            localField: 'user',
-            foreignField: 'user',
-            as: 'guide'
-          }
-        },
-        { $unwind: '$guide' },
-        {
-          $match: {
-            'guide.languages.name': { $in: languagesArray }
-          }
-        },
-        {
-          $skip: skip
-        },
-        {
-          $limit: limit
-        },
-        {
-          $sort: { [sortField]: sortOrder }
-        }
-      ]);
+        const languagesArray = Array.isArray(languages) ? languages : [languages];
+        // Use aggregate to join with Guide and User collections
+        query = Tour.aggregate([
+            {
+                $lookup: {
+                    from: 'guides',
+                    localField: 'user',
+                    foreignField: 'user',
+                    as: 'guide'
+                }
+            },
+            { $unwind: '$guide' },
+            {
+                $match: {
+                    'guide.languages.name': { $in: languagesArray }
+                }
+            },
+            {
+                $skip: skip
+            },
+            {
+                $limit: limit
+            },
+            {
+                $sort: { [sortField]: sortOrder }
+            }
+        ]);
     }
-    // console.log(searchFilter);
+
     // Apply sorting and pagination to the query
     query.sort({ [sortField]: sortOrder }).skip(skip).limit(limit);
 
@@ -106,8 +111,8 @@ exports.getTours = catchAsync(async (req, res, next) => {
 
     // Execute the query to fetch tours and count total number of tours
     const [tours, totalToursCount] = await Promise.all([
-      query.exec(),
-      Tour.countDocuments(searchFilter)
+        query.exec(),
+        Tour.countDocuments(searchFilter)
     ]);
 
     // Calculate total number of pages
@@ -117,43 +122,42 @@ exports.getTours = catchAsync(async (req, res, next) => {
 
     const user = req.user;
     // faviorate tours
-    if(user){
+    if (user) {
         const favoriteLists = await FavoriteList.find({ user: req.user._id });
         const favoriteTourIds = favoriteLists.reduce((acc, list) => {
-          acc.push(...list.tours);
-          return acc;
+            acc.push(...list.tours);
+            return acc;
         }, []);
-        
-        const toursWithFavoriteInfo = tours.map(tour => {
-          let faviorate = false;
-          favoriteTourIds.forEach(Id =>{
-            if(tour._id.toString() === Id.toString()){
-              faviorate = true;
-            }
-          })
 
-          return { ...tour.toObject(), faviorate };
+        const toursWithFavoriteInfo = tours.map(tour => {
+            let faviorate = false;
+            favoriteTourIds.forEach(Id => {
+                if (tour._id.toString() === Id.toString()) {
+                    faviorate = true;
+                }
+            });
+
+            return { ...tour.toObject(), faviorate };
         });
-        showTours = toursWithFavoriteInfo;
+        const showTours = toursWithFavoriteInfo;
     }
     console.log(showTours);
 
-
     // Return a response with the fetched tours and pagination metadata
     res.status(200).json({
-      status: 'success',
-      pagination: {
-        totalItems: totalToursCount,
-        totalPages,
-        currentPage: page,
-        limit
-      },
-      data: showTours
+        status: 'success',
+        pagination: {
+            totalItems: totalToursCount,
+            totalPages,
+            currentPage: page,
+            limit
+        },
+        data: showTours
     });
-  } catch (error) {
+} catch (error) {
     console.error('Error fetching tours:', error);
     next(error);
-  }
+}
 });
 
   
