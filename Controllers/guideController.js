@@ -149,11 +149,13 @@ exports.getGuide = catchAsync(async (req, res, next) => {
 });
 //TODO use token
 exports.guideTours = catchAsync(async (req , res , next) =>{
-    const guideId = req.params.guideId;
-    const tours = await Tour.find({user: guideId});
+    // const guideId = req.params.guideId;
+    const user = req.user;
+    const guide = await Guide.find({user: user});
+    const tours = await Tour.find({user: guide._id});
 
     // handle tours that user requested (user tours)
-    const userTours = await GuideApplication.find({tour_guide: guideId});
+    const userTours = await GuideApplication.find({tour_guide: guide._id});
 
     if(!tours && !userTours){
         return next(new AppError('there is no tour for this guide'));
