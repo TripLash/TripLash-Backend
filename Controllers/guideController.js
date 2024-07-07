@@ -153,11 +153,14 @@ exports.getGuide = catchAsync(async (req, res, next) => {
 exports.guideTours = catchAsync(async (req , res , next) =>{
     // const guideId = req.params.guideId;
     const user = req.user;
-    const guide = await Guide.find({user: user});
-    const tours = await Tour.find({user: guide._id});
+    const guide = await Guide.find({user: user._id});
+    console.log(guide[0])
+    const tours = await Tour.find({user: guide[0]._id});
+    console.log(tours)
 
     // handle tours that user requested (user tours)
     const userTours = await GuideApplication.find({tour_guide: guide._id});
+    console.log(userTours)
 
     if(!tours && !userTours){
         return next(new AppError('there is no tour for this guide'));

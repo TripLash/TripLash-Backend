@@ -36,7 +36,7 @@ const tourSchema = new mongoose.Schema({
     },
     tourType: [{
         type: String,
-        enum: ['Dance', 'Desert', 'Dolphin', 'Jeep Safari', 'Light and Sound', 'Music', 'Sailing', 'Shark Diving', 'Shore Excursion', 'Snorkeling', 'Story Telling', 'Sunset Cruise', 'Tribal', 'adventure sports', 'archaeological', 'architectural', 'art', 'atv', 'ballooning', 'bizarre', 'boating', 'camping', 'cultural', 'diving', 'driver', 'educational', 'gastronomical', 'haunted', 'historical', 'kid friendly', 'luxury', 'museums', 'nature', 'photography', 'religious', 'romantic', 'safari', 'shopping', 'sightseeing', 'skip the line', 'sunandsand', 'trekking', 'underwater', 'walking', 'winetour'],
+        enum: ['Dance', 'Desert', 'Dolphin', 'Jeep Safari', 'Light and Sound', 'Music', 'Sailing', 'Shark Diving', 'Shore Excursion', 'Snorkeling', 'Story Telling', 'Sunset Cruise', 'Tribal', 'adventure sports', 'archaeological', 'architectural', 'art', 'atv', 'ballooning', 'bizarre', 'boating', 'camping', 'cultural', 'diving', 'driver', 'educational', 'gastronomical', 'haunted', 'historical', 'kid friendly', 'luxury', 'museums', 'nature', 'photography', 'religious', 'romantic', 'safari', 'shopping', 'sightseeing', 'skip the line', 'sunandsand', 'trekking', 'underwater', 'walking', 'winetour'],
         required: [true , 'specify tour type please!']
     }],
     ratingsAverage:{
