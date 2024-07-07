@@ -155,11 +155,11 @@ exports.guideTours = catchAsync(async (req , res , next) =>{
     const user = req.user;
     const guide = await Guide.find({user: user._id});
     console.log(guide[0])
-    const tours = await Tour.find({user: guide[0]._id});
+    const tours = await Tour.find({user: guide[0]._id}).populate('user');
     console.log(tours)
 
     // handle tours that user requested (user tours)
-    const userTours = await GuideApplication.find({tour_guide: guide._id});
+    const userTours = await GuideApplication.find({tour_guide: guide._id}).populate('user');
     console.log(userTours)
 
     if(!tours && !userTours){
