@@ -1,7 +1,7 @@
 <h1>💫 TripLash Project (Graduation Project)</h1>
 Eunoia simplifies event planning by integrating services like venues, catering, and photography into a single platform. Accessible via app and web, it features AI-powered recommendations and secure booking.
 
-<h1>🌟 Eunoia API</h1>
+<h1>🌟 TripLash API</h1>
 This project offers APIs for efficient event planning, enabling access to service provider directories, booking services, and user account management. Built with Express.js and tested with Jest, it includes AI-powered recommendations and secure transactions to enhance user experience.
 
 <h1>📋 Table of Contents</h1>
