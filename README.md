@@ -5,19 +5,19 @@ Eunoia simplifies event planning by integrating services like venues, catering, 
 This project offers APIs for efficient event planning, enabling access to service provider directories, booking services, and user account management. Built with Express.js and tested with Jest, it includes AI-powered recommendations and secure transactions to enhance user experience.
 
 <h1>📋 Table of Contents</h1>
-🌟 TripLash API
-      📋 Table of Contents
-      🚀 Getting Started
-          🔧 Prerequisites
-      📦 Installation
-      🖥️ Running the Server
-      🧪 Running Tests
-      📚 API Documentation
-          👥 Authentication Endpoints
-          📊 Services Endpoints
-          👌 API Complete Docs
-          🗂️ Project Structure
-      📜 License
+🌟 TripLash API <br>
+      📋 Table of Contents <br>
+      🚀 Getting Started <br>
+          🔧 Prerequisites <br>
+      📦 Installation <br>
+      🖥️ Running the Server <br>
+      🧪 Running Tests <br>
+      📚 API Documentation <br>
+          👥 Authentication Endpoints <br>
+          📊 Services Endpoints <br>
+          👌 API Complete Docs <br>
+          🗂️ Project Structure <br>
+      📜 License <br>
       
 <h1>🚀 Getting Started</h1>
       🔧 Prerequisites
